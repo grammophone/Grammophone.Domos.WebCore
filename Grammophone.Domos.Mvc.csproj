@@ -75,9 +75,9 @@
   <ItemGroup>
     <Compile Include="CustomValidator.cs" />
     <Compile Include="CustomValidatorProvider.cs" />
-    <Compile Include="EntityModelBinder.cs" />
+    <Compile Include="KeyedEntityModelBinder.cs" />
     <Compile Include="EntityModelBinderProvider.cs" />
-    <Compile Include="ValueKeyEntityModelBinder.cs" />
+    <Compile Include="ValueKeyedEntityModelBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

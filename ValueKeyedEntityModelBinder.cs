@@ -14,7 +14,7 @@ namespace Grammophone.Domos.Mvc
 	/// properties from binding.
 	/// </summary>
 	/// <typeparam name="K">The type of the key of the entity.</typeparam>
-	public class ValueKeyEntityModelBinder<K> : EntityModelBinder<K>
+	public class ValueKeyedEntityModelBinder<K> : KeyedEntityModelBinder<K>
 		where K : struct, IEquatable<K>
 	{
 		/// <summary>

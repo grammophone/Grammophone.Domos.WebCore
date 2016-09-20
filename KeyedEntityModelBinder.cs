@@ -18,7 +18,7 @@ namespace Grammophone.Domos.Mvc
 	/// properties from binding.
 	/// </summary>
 	/// <typeparam name="K">The type of the key of the entity.</typeparam>
-	public class EntityModelBinder<K> : DefaultModelBinder
+	public class KeyedEntityModelBinder<K> : DefaultModelBinder
 	{
 		#region Private fields
 
@@ -33,10 +33,10 @@ namespace Grammophone.Domos.Mvc
 		/// <summary>
 		/// Static initialization.
 		/// </summary>
-		static EntityModelBinder()
+		static KeyedEntityModelBinder()
 		{
 			UpdateEntitiesCollectionMethod =
-				typeof(EntityModelBinder<K>)
+				typeof(KeyedEntityModelBinder<K>)
 				.GetMethod("UpdateEntitiesCollectionImpl", BindingFlags.Static | BindingFlags.NonPublic);
 
 			EntityCollectionInterfacesByType = new ConcurrentDictionary<Type, Type>();
