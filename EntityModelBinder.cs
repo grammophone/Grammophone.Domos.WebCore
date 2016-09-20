@@ -200,7 +200,7 @@ namespace Grammophone.Domos.Mvc
 		/// </remarks>
 		private static Type GetEntityCollectionInterfaceType(Type modelType)
 		{
-			if (modelType == null) throw new ArgumentNullException("modelType");
+			if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
 			return EntityCollectionInterfacesByType.GetOrAdd(modelType, DiscoverCollectionInterfaceType);
 		}
