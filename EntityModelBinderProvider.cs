@@ -28,9 +28,13 @@ namespace Grammophone.Domos.Mvc
 			if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
 			if (typeof(IEntityWithID<long>).IsAssignableFrom(modelType))
-				return new EntityModelBinder<long>();
+				return new ValueKeyEntityModelBinder<long>();
 			else if (typeof(IEntityWithID<int>).IsAssignableFrom(modelType))
-				return new EntityModelBinder<int>();
+				return new ValueKeyEntityModelBinder<int>();
+			else if (typeof(IEntityWithID<Guid>).IsAssignableFrom(modelType))
+				return new ValueKeyEntityModelBinder<Guid>();
+			else if (typeof(IEntityWithID<object>).IsAssignableFrom(modelType)) 
+				return new EntityModelBinder<object>(); // Cacthes all other IEntityWithID<K> due to covariance.
 			else
 				return null;
 		}

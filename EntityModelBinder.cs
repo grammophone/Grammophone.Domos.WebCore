@@ -13,13 +13,12 @@ using Grammophone.Domos.Domain;
 namespace Grammophone.Domos.Mvc
 {
 	/// <summary>
-	/// Base for binding entities derived from <see cref="IEntityWithID{K}"/>.
+	/// Binder for entities derived from <see cref="IEntityWithID{K}"/>.
 	/// Hides the <see cref="IUserTrackingEntity{U}"/> and <see cref="IUserGroupTrackingEntity{U}"/>
 	/// properties from binding.
 	/// </summary>
 	/// <typeparam name="K">The type of the key of the entity.</typeparam>
 	public class EntityModelBinder<K> : DefaultModelBinder
-		where K : IEquatable<K>
 	{
 		#region Private fields
 
@@ -99,9 +98,9 @@ namespace Grammophone.Domos.Mvc
 						{
 							K newID = (K)newIDValue;
 
-							if (!originalID.Equals(newID))
+							if (!AreKeysEqual(originalID, newID))
 							{
-								// Force creating a new instance instead of populatinig the existing.
+								// Force creating a new instance instead of populating the existing.
 								bindingContext.ModelMetadata.Model = null;
 							}
 
@@ -171,6 +170,19 @@ namespace Grammophone.Domos.Mvc
 			}
 
 			return new PropertyDescriptorCollection(filteredProperties.ToArray(), true);
+		}
+
+		/// <summary>
+		/// Test whether two key values are equal.
+		/// </summary>
+		/// <param name="key1">The first key value.</param>
+		/// <param name="key2">The second key value.</param>
+		/// <remarks>
+		/// The default implementation uses <see cref="Object.Equals(object, object)"/>
+		/// </remarks>
+		protected virtual bool AreKeysEqual(K key1, K key2)
+		{
+			return Object.Equals(key1, key2);
 		}
 
 		#endregion

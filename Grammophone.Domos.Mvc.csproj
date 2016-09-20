@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="EntityModelBinder.cs" />
     <Compile Include="EntityModelBinderProvider.cs" />
+    <Compile Include="ValueKeyEntityModelBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
