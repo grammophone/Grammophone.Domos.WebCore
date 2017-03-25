@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="CustomValidator.cs" />
     <Compile Include="CustomValidatorProvider.cs" />
+    <Compile Include="HtmlExtensions.cs" />
     <Compile Include="KeyedEntityModelBinder.cs" />
     <Compile Include="EntityModelBinderProvider.cs" />
     <Compile Include="ValueKeyedEntityModelBinder.cs" />
