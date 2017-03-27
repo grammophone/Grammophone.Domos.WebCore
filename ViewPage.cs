@@ -12,6 +12,8 @@ namespace Grammophone.Domos.Mvc
 {
 	/// <summary>
 	/// Base for Razor views cooperating with the Domos system.
+	/// In order to create a replacement for the default base,
+	/// subclass this to a specialized abstract class with no type arguments.
 	/// </summary>
 	/// <typeparam name="U">The type of the user.</typeparam>
 	/// <typeparam name="D">The type of the domain container, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
@@ -69,6 +71,8 @@ namespace Grammophone.Domos.Mvc
 
 	/// <summary>
 	/// Base for Razor views cooperating with the Domos system.
+	/// In order to create a replacement for the default base,
+	/// subclass this to a specialized abstract class with no type arguments.
 	/// </summary>
 	/// <typeparam name="U">The type of the user.</typeparam>
 	/// <typeparam name="D">The type of the domain container, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
@@ -90,7 +94,9 @@ namespace Grammophone.Domos.Mvc
 		#region Public properties
 
 		/// <summary>
-		/// Public queriable entities.
+		/// Public queriable entities,
+		/// if the view is driven by a <see cref="LogicController{U, D, S}"/>,
+		/// else null.
 		/// </summary>
 		public PD PublicDomain => this.LogicSession?.PublicDomain;
 
