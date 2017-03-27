@@ -17,7 +17,7 @@ namespace Grammophone.Domos.Mvc
 	/// </summary>
 	/// <typeparam name="U">The type of the user.</typeparam>
 	/// <typeparam name="D">The type of the domain container, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
-	/// <typeparam name="S">The type of Domos logic session, derived from <see cref="Session{U, D}"/>.</typeparam>
+	/// <typeparam name="S">The type of Domos logic session, derived from <see cref="LogicSession{U, D}"/>.</typeparam>
 	/// <remarks>
 	/// In order to use this class as a base view, change the default base as described 
 	/// in http://haacked.com/archive/2011/02/21/changing-base-type-of-a-razor-view.aspx/
@@ -26,7 +26,7 @@ namespace Grammophone.Domos.Mvc
 	public abstract class ViewPage<U, D, S> : WebViewPage
 		where U : User
 		where D : IUsersDomainContainer<U>
-		where S : Session<U, D>, new()
+		where S : LogicSession<U, D>, new()
 	{
 		#region Private fields
 
@@ -77,7 +77,7 @@ namespace Grammophone.Domos.Mvc
 	/// <typeparam name="U">The type of the user.</typeparam>
 	/// <typeparam name="D">The type of the domain container, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
 	/// <typeparam name="S">
-	/// The type of Domos logic session, derived from <see cref="Session{U, D}"/> and offering public domain access.
+	/// The type of Domos logic session, derived from <see cref="LogicSession{U, D}"/> and offering public domain access.
 	/// </typeparam>
 	/// <typeparam name="PD">The type of public domain repository.</typeparam>
 	/// <remarks>
@@ -88,7 +88,7 @@ namespace Grammophone.Domos.Mvc
 	public abstract class ViewPage<U, D, S, PD> : ViewPage<U, D, S>
 		where U : User
 		where D : IUsersDomainContainer<U>
-		where S : Session<U, D>, IPublicDomainProvider<D, PD>, new()
+		where S : LogicSession<U, D>, IPublicDomainProvider<D, PD>, new()
 		where PD : PublicDomain<D>
 	{
 		#region Public properties

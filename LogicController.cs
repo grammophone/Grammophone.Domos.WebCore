@@ -15,14 +15,14 @@ namespace Grammophone.Domos.Mvc
 	/// </summary>
 	/// <typeparam name="U">The type of the user, derived from <see cref="User"/>.</typeparam>
 	/// <typeparam name="D">The type of the domainContainer, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
-	/// <typeparam name="S">The type of logic session, derived from <see cref="Session{U, D}"/>.</typeparam>
+	/// <typeparam name="S">The type of logic session, derived from <see cref="LogicSession{U, D}"/>.</typeparam>
 	/// <remarks>
 	/// Uses the authentication environment to determine the logged-in user.
 	/// </remarks>
 	public abstract class LogicController<U, D, S> : Controller
 		where U : User
 		where D : IUsersDomainContainer<U>
-		where S : Session<U, D>, new()
+		where S : LogicSession<U, D>, new()
 	{
 		#region Private fields
 
