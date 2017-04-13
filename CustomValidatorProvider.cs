@@ -80,10 +80,9 @@ namespace Grammophone.Domos.Mvc
 		{
 			#region Private fields
 
-			private Dictionary<string, IReadOnlyList<ValidationAttribute>> attributesByPropertyName =
-				new Dictionary<string, IReadOnlyList<ValidationAttribute>>();
+			private Dictionary<string, IReadOnlyList<ValidationAttribute>> attributesByPropertyName;
 
-			private TypeRegistrationKey key = new TypeRegistrationKey();
+			private TypeRegistrationKey key;
 
 			#endregion
 
@@ -97,7 +96,12 @@ namespace Grammophone.Domos.Mvc
 			{
 				if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
+				attributesByPropertyName = new Dictionary<string, IReadOnlyList<ValidationAttribute>>();
+
+				key = new TypeRegistrationKey();
 				key.ModelType = modelType;
+
+				this.AllowsDefaultValidation = true;
 			}
 
 			#endregion
