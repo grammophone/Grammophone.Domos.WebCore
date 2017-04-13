@@ -106,7 +106,7 @@ namespace Grammophone.Domos.Mvc
 
 			/// <summary>
 			/// If true, the default validation will be appended along with the custom one.
-			/// The default value is false.
+			/// The default value is true.
 			/// </summary>
 			public bool AllowsDefaultValidation { get; internal set; }
 
@@ -163,11 +163,12 @@ namespace Grammophone.Domos.Mvc
 			#region Public methods
 
 			/// <summary>
-			/// Allows default validation handling to be appended to the custom handling.
+			/// Omit default validation defined in attributes and other standard APIs on the models
+			/// and only allow the custom handling defined in this provider.
 			/// </summary>
-			public TypeRegistration AllowDefaultValidation()
+			public TypeRegistration OmitDefaultValidation()
 			{
-				this.AllowsDefaultValidation = true;
+				this.AllowsDefaultValidation = false;
 
 				return this;
 			}
@@ -322,11 +323,15 @@ namespace Grammophone.Domos.Mvc
 			if (metadata.PropertyName != null &&
 				registration.AttributesByPropertyName.TryGetValue(metadata.PropertyName, out attributes))
 			{
-				var validators = defaultProvider.GetValidatorsForAttributes(metadata, context, attributes);
+				var validators = from v in defaultProvider.GetValidatorsForAttributes(metadata, context, attributes)
+												 where !(v is RequiredAttributeAdapter) // RequiredAttributeAdapter is added irrespectively of given attributes.
+												 select v;
 
 				if (registration.AllowsDefaultValidation)
 				{
-					validators = validators.Concat(defaultProvider.GetValidators(metadata, context));
+					var defaultValidators = defaultProvider.GetValidators(metadata, context);
+
+					validators = validators.Concat(defaultValidators);
 				}
 
 				return validators;
