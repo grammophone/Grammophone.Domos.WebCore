@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -30,59 +31,15 @@ namespace Grammophone.Domos.Mvc
 		}
 
 		/// <summary>
-		/// Dictionary key for the <see cref="TypeRegistration"/> class.
-		/// </summary>
-		internal class TypeRegistrationKey : IEquatable<TypeRegistrationKey>
-		{
-			#region Public properties
-
-			public Type ControllerType { get; internal set; }
-
-			public Type ModelType { get; internal set; }
-
-			#endregion
-
-			#region IEquatable<TypeRegistrationKey> Members
-
-			public bool Equals(TypeRegistrationKey other)
-			{
-				if (other == null) return false;
-
-				return this.ControllerType == other.ControllerType &&
-					this.ModelType == other.ModelType;
-			}
-
-			#endregion
-
-			#region Public methods
-
-			public override bool Equals(object obj)
-			{
-				return this.Equals(obj as TypeRegistrationKey);
-			}
-
-			public override int GetHashCode()
-			{
-				int code = this.ModelType.GetHashCode();
-
-				if (this.ControllerType != null) code = 23 * code + this.ControllerType.GetHashCode();
-
-				return code;
-			}
-
-			#endregion
-		}
-
-		/// <summary>
 		/// A registration of a model type for custom validation.
 		/// </summary>
 		public class TypeRegistration
 		{
 			#region Private fields
 
-			private Dictionary<string, IReadOnlyList<ValidationAttribute>> attributesByPropertyName;
+			private readonly Dictionary<string, IReadOnlyList<ValidationAttribute>> attributesByPropertyName;
 
-			private TypeRegistrationKey key;
+			private HashSet<Type> allowedControllerTypes;
 
 			#endregion
 
@@ -96,10 +53,9 @@ namespace Grammophone.Domos.Mvc
 			{
 				if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
-				attributesByPropertyName = new Dictionary<string, IReadOnlyList<ValidationAttribute>>();
+				this.ModelType = modelType;
 
-				key = new TypeRegistrationKey();
-				key.ModelType = modelType;
+				attributesByPropertyName = new Dictionary<string, IReadOnlyList<ValidationAttribute>>();
 
 				this.AllowsDefaultValidation = true;
 			}
@@ -128,39 +84,7 @@ namespace Grammophone.Domos.Mvc
 			/// <summary>
 			/// The type of the model being assigned the custom validator.
 			/// </summary>
-			public Type ModelType
-			{
-				get
-				{
-					return key.ModelType;
-				}
-			}
-
-			/// <summary>
-			/// If not null, filters the controller name.
-			/// </summary>
-			public Type ControllerType
-			{
-				get
-				{
-					return key.ControllerType;
-				}
-			}
-
-			#endregion
-
-			#region Internal properties
-
-			/// <summary>
-			/// Used as a dictionary key for the class.
-			/// </summary>
-			internal TypeRegistrationKey Key
-			{
-				get
-				{
-					return key;
-				}
-			}
+			public Type ModelType { get; private set; }
 
 			#endregion
 
@@ -178,13 +102,19 @@ namespace Grammophone.Domos.Mvc
 			}
 
 			/// <summary>
-			/// Filters the controller name.
+			/// Add an allowed controller type.
 			/// </summary>
-			public TypeRegistration FilterControllerType(Type controllerType)
+			/// <remarks>
+			/// Inheritance is not checked. Add separate invokations when
+			/// allowing for controller subtypes.
+			/// </remarks>
+			public TypeRegistration FilterByControllerType(Type controllerType)
 			{
 				if (controllerType == null) throw new ArgumentNullException(nameof(controllerType));
 
-				key.ControllerType = controllerType;
+				if (allowedControllerTypes == null) allowedControllerTypes = new HashSet<Type>();
+
+				allowedControllerTypes.Add(controllerType);
 
 				return this;
 			}
@@ -194,6 +124,7 @@ namespace Grammophone.Domos.Mvc
 			/// </summary>
 			/// <param name="propertyName">The name of the property.</param>
 			/// <param name="attributes">the validation attributes to assign to the property.</param>
+			/// <returns>Returns the configured type registration.</returns>
 			public TypeRegistration ValidateProperty(string propertyName, params ValidationAttribute[] attributes)
 			{
 				if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
@@ -218,8 +149,60 @@ namespace Grammophone.Domos.Mvc
 				return this;
 			}
 
+			/// <summary>
+			/// Returns true when the validator provider applies to a controller.
+			/// </summary>
+			/// <param name="controllerType">The type of a controller.</param>
+			public bool AllowsControllerType(Type controllerType)
+			{
+				if (controllerType == null) throw new ArgumentNullException(nameof(controllerType));
+
+				if (allowedControllerTypes == null) return true; // Null marks all allowed.
+
+				return allowedControllerTypes.Contains(controllerType);
+			}
+
+			#endregion
+		}
+
+		/// <summary>
+		/// A registration of a model type for custom validation.
+		/// </summary>
+		/// <typeparam name="T">The type of the model.</typeparam>
+		public class TypeRegistration<T> : TypeRegistration
+		{
+			#region Construction
+
+			internal TypeRegistration() : base(typeof(T))
+			{
+			}
+
 			#endregion
 
+			#region Public properties
+
+			/// <summary>
+			/// Assign validation to a property.
+			/// </summary>
+			/// <typeparam name="P">The type of the property.</typeparam>
+			/// <param name="propertySelector">The selector function for the property.</param>
+			/// <param name="attributes">the validation attributes to assign to the property.</param>
+			/// <returns>Returns the configured type registration.</returns>
+			public TypeRegistration<T> ValidateProperty<P>(
+				Expression<Func<T, P>> propertySelector,
+				params ValidationAttribute[] attributes)
+			{
+				if (propertySelector == null) throw new ArgumentNullException(nameof(propertySelector));
+				if (attributes == null) throw new ArgumentNullException(nameof(attributes));
+
+				string propertyPath = ExpressionHelper.GetExpressionText(propertySelector);
+
+				ValidateProperty(propertyPath, attributes);
+
+				return this;
+			}
+
+			#endregion
 		}
 
 		#endregion
@@ -228,9 +211,7 @@ namespace Grammophone.Domos.Mvc
 
 		private readonly AttributesValidatorProvider defaultProvider;
 
-		private Dictionary<TypeRegistrationKey, TypeRegistration> registrationsByTypeAndController;
-
-		private Dictionary<TypeRegistrationKey, TypeRegistration> registrationsByType;
+		private IDictionary<Type, IList<TypeRegistration>> registrationsByType;
 
 		#endregion
 
@@ -243,8 +224,7 @@ namespace Grammophone.Domos.Mvc
 		{
 			defaultProvider = new AttributesValidatorProvider();
 
-			registrationsByTypeAndController = new Dictionary<TypeRegistrationKey, TypeRegistration>();
-			registrationsByType = new Dictionary<TypeRegistrationKey, TypeRegistration>();
+			registrationsByType = new Dictionary<Type, IList<TypeRegistration>>();
 		}
 
 		#endregion
@@ -254,20 +234,32 @@ namespace Grammophone.Domos.Mvc
 		/// <summary>
 		/// Register a custom validation for a model.
 		/// </summary>
-		public CustomValidatorProvider Register(TypeRegistration typeRegistration)
+		/// <returns>
+		/// Returns the type registration of the model to be further configured.
+		/// </returns>
+		public TypeRegistration Register(Type type)
 		{
-			if (typeRegistration == null) throw new ArgumentNullException(nameof(typeRegistration));
+			var typeRegistration = new TypeRegistration(type);
 
-			if (typeRegistration.ControllerType != null)
-			{
-				registrationsByTypeAndController[typeRegistration.Key] = typeRegistration;
-			}
-			else
-			{
-				registrationsByType[typeRegistration.Key] = typeRegistration;
-			}
+			Initialize(typeRegistration);
 
-			return this;
+			return typeRegistration;
+		}
+
+		/// <summary>
+		/// Register a custom validation for a model.
+		/// </summary>
+		/// <typeparam name="T">The type of the model.</typeparam>
+		/// <returns>
+		/// Returns the type registration of the model to be further configured.
+		/// </returns>
+		public TypeRegistration<T> Register<T>()
+		{
+			var typeRegistration = new TypeRegistration<T>();
+
+			Initialize(typeRegistration);
+
+			return typeRegistration;
 		}
 
 		/// <summary>
@@ -287,27 +279,16 @@ namespace Grammophone.Domos.Mvc
 
 			Type controllerType = context.Controller.GetType();
 
-			TypeRegistration registration;
+			IList<TypeRegistration> typeRegistrations;
 
-			var keyWithTypeAndController = new TypeRegistrationKey
+			if (registrationsByType.TryGetValue(modelType, out typeRegistrations))
 			{
-				ModelType = modelType,
-				ControllerType = controllerType
-			};
+				foreach (var typeRegistration in typeRegistrations)
+				{
+					var validators = TryGetValidators(metadata, context, typeRegistration);
 
-			if (registrationsByTypeAndController.TryGetValue(keyWithTypeAndController, out registration))
-			{
-				return GetValidators(metadata, context, registration);
-			}
-
-			var keyWithType = new TypeRegistrationKey
-			{
-				ModelType = modelType
-			};
-
-			if (registrationsByType.TryGetValue(keyWithType, out registration))
-			{
-				return GetValidators(metadata, context, registration);
+					if (validators != null) return validators;
+				}
 			}
 
 			return defaultProvider.GetValidators(metadata, context);
@@ -317,7 +298,7 @@ namespace Grammophone.Domos.Mvc
 
 		#region Private methods
 
-		private IEnumerable<ModelValidator> GetValidators(
+		private IEnumerable<ModelValidator> TryGetValidators(
 			ModelMetadata metadata,
 			ControllerContext context,
 			TypeRegistration registration)
@@ -340,15 +321,22 @@ namespace Grammophone.Domos.Mvc
 
 				return validators;
 			}
-			else
+
+			return null;
+		}
+
+		private void Initialize(TypeRegistration typeRegistration)
+		{
+			IList<TypeRegistration> typeRegistrations;
+
+			if (!registrationsByType.TryGetValue(typeRegistration.ModelType, out typeRegistrations))
 			{
-				if (registration.AllowsDefaultValidation)
-				{
-					return defaultProvider.GetValidators(metadata, context);
-				}
+				typeRegistrations = new List<TypeRegistration>();
+
+				registrationsByType[typeRegistration.ModelType] = typeRegistrations;
 			}
 
-			return Enumerable.Empty<ModelValidator>();
+			typeRegistrations.Add(typeRegistration);
 		}
 
 		#endregion
