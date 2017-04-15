@@ -9,7 +9,7 @@ using System.Web.Mvc;
 namespace Grammophone.Domos.Mvc
 {
 	/// <summary>
-	/// Controller facilitating model binding.
+	/// Controller facilitating model binding with better strong-typing.
 	/// </summary>
 	public abstract class ModelController : Controller
 	{
@@ -22,7 +22,7 @@ namespace Grammophone.Domos.Mvc
 		/// <typeparam name="M">The type of the model.</typeparam>
 		/// <param name="model">The model to update.</param>
 		/// <param name="includedPropertiesSelectors">Array of expressions of included properties.</param>
-		/// <returns></returns>
+		/// <returns>Returns true when the included model properties were valid.</returns>
 		protected bool TryUpdateModel<M>(
 			M model,
 			params Expression<Func<M, object>>[] includedPropertiesSelectors)
@@ -44,7 +44,7 @@ namespace Grammophone.Domos.Mvc
 		/// <param name="model">The model to update.</param>
 		/// <param name="prefix">The prefix to use when looking up values in the value provider.</param>
 		/// <param name="includedPropertiesSelectors">Array of expressions of included properties.</param>
-		/// <returns></returns>
+		/// <returns>Returns true when the included model properties were valid.</returns>
 		protected bool TryUpdateModel<M>(
 			M model,
 			string prefix,
@@ -66,7 +66,7 @@ namespace Grammophone.Domos.Mvc
 		/// <typeparam name="M">The type of the model.</typeparam>
 		/// <param name="model">The model to update.</param>
 		/// <param name="includedPropertiesSelectors">Array of expressions of included properties.</param>
-		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Thrown when the included properties are not valid.</exception>
 		protected void UpdateModel<M>(
 			M model,
 			params Expression<Func<M, object>>[] includedPropertiesSelectors)
@@ -88,7 +88,7 @@ namespace Grammophone.Domos.Mvc
 		/// <param name="model">The model to update.</param>
 		/// <param name="prefix">The prefix to use when looking up values in the value provider.</param>
 		/// <param name="includedPropertiesSelectors">Array of expressions of included properties.</param>
-		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Thrown when the included properties are not valid.</exception>
 		protected void UpdateModel<M>(
 			M model,
 			string prefix,
