@@ -285,6 +285,8 @@ namespace Grammophone.Domos.Mvc
 			{
 				foreach (var typeRegistration in typeRegistrations)
 				{
+					if (!typeRegistration.AllowsControllerType(controllerType)) continue;
+
 					var validators = TryGetValidators(metadata, context, typeRegistration);
 
 					if (validators != null) return validators;
