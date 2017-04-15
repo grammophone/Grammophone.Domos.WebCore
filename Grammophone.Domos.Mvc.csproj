@@ -102,6 +102,7 @@
     <Compile Include="EntityModelBinderProvider.cs" />
     <Compile Include="LogicApiController.cs" />
     <Compile Include="LogicController.cs" />
+    <Compile Include="ModelController.cs" />
     <Compile Include="Models\UserErrorModel.cs" />
     <Compile Include="ModelViewPage.cs" />
     <Compile Include="ValueKeyedEntityModelBinder.cs" />

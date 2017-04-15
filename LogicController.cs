@@ -19,7 +19,7 @@ namespace Grammophone.Domos.Mvc
 	/// <remarks>
 	/// Uses the authentication environment to determine the logged-in user.
 	/// </remarks>
-	public abstract class LogicController<U, D, S> : Controller
+	public abstract class LogicController<U, D, S> : ModelController
 		where U : User
 		where D : IUsersDomainContainer<U>
 		where S : LogicSession<U, D>, new()
