@@ -56,19 +56,11 @@ namespace Grammophone.Domos.Mvc
 				this.ModelType = modelType;
 
 				attributesByPropertyName = new Dictionary<string, IReadOnlyList<ValidationAttribute>>();
-
-				this.AllowsDefaultValidation = true;
 			}
 
 			#endregion
 
 			#region Public properties
-
-			/// <summary>
-			/// If true, the default validation will be appended along with the custom one.
-			/// The default value is true.
-			/// </summary>
-			public bool AllowsDefaultValidation { get; internal set; }
 
 			/// <summary>
 			/// Map of validation attributes by model property name.
@@ -89,17 +81,6 @@ namespace Grammophone.Domos.Mvc
 			#endregion
 
 			#region Public methods
-
-			/// <summary>
-			/// Omit default validation defined in attributes and other standard APIs on the models
-			/// and only allow the custom handling defined in this provider.
-			/// </summary>
-			public TypeRegistration OmitDefaultValidation()
-			{
-				this.AllowsDefaultValidation = false;
-
-				return this;
-			}
 
 			/// <summary>
 			/// Add an allowed controller type.
@@ -263,7 +244,8 @@ namespace Grammophone.Domos.Mvc
 		}
 
 		/// <summary>
-		/// If there is a custom validator for a model, return it, else defer to the default validator.
+		/// If there is a custom set of validators for a model, return it,
+		/// return the empty collection.
 		/// </summary>
 		public override IEnumerable<ModelValidator> GetValidators(ModelMetadata metadata, ControllerContext context)
 		{
@@ -293,7 +275,7 @@ namespace Grammophone.Domos.Mvc
 				}
 			}
 
-			return defaultProvider.GetValidators(metadata, context);
+			return Enumerable.Empty<ModelValidator>();
 		}
 
 		#endregion
@@ -313,13 +295,6 @@ namespace Grammophone.Domos.Mvc
 				var validators = from v in defaultProvider.GetValidatorsForAttributes(metadata, context, attributes)
 												 where !(v is RequiredAttributeAdapter) // RequiredAttributeAdapter is added irrespectively of given attributes.
 												 select v;
-
-				if (registration.AllowsDefaultValidation)
-				{
-					var defaultValidators = defaultProvider.GetValidators(metadata, context);
-
-					validators = validators.Concat(defaultValidators);
-				}
 
 				return validators;
 			}
