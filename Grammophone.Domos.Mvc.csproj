@@ -97,6 +97,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="GenericExpressionHelper.cs" />
     <Compile Include="HtmlExtensions.cs" />
     <Compile Include="KeyedEntityModelBinder.cs" />
     <Compile Include="EntityModelBinderProvider.cs" />

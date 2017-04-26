@@ -114,7 +114,7 @@ namespace Grammophone.Domos.Mvc
 
 			for (int i = 0; i < propertySelectors.Length; i++)
 			{
-				propertyNames[i] = ExpressionHelper.GetExpressionText(propertySelectors[i]);
+				propertyNames[i] = GenericExpressionHelper.GetExpressionText(propertySelectors[i]);
 			}
 
 			return propertyNames;
