@@ -103,6 +103,94 @@ namespace Grammophone.Domos.Mvc
 			UpdateModel(model, prefix, includedProperties);
 		}
 
+		/// <summary>
+		/// Updates the specified model instance using values from the controller's current value provider,
+		/// excluding the specified properties.
+		/// </summary>
+		/// <typeparam name="M">The type of the model.</typeparam>
+		/// <param name="model">The model to update.</param>
+		/// <param name="excludedPropertiesSelectors">Array of expressions of excluded properties.</param>
+		/// <returns>Returns true when the included model properties were valid.</returns>
+		protected bool TryUpdateModelExcluding<M>(
+			M model,
+			params Expression<Func<M, object>>[] excludedPropertiesSelectors)
+			where M : class
+		{
+			if (model == null) throw new ArgumentNullException(nameof(model));
+			if (excludedPropertiesSelectors == null) throw new ArgumentNullException(nameof(excludedPropertiesSelectors));
+
+			string[] excludedProperties = GetPropertyNames(excludedPropertiesSelectors);
+
+			return TryUpdateModel(model, String.Empty, null, excludedProperties);
+		}
+
+		/// <summary>
+		/// Updates the specified model instance using values from the controller's current value provider,
+		/// excluding the specified properties.
+		/// </summary>
+		/// <typeparam name="M">The type of the model.</typeparam>
+		/// <param name="model">The model to update.</param>
+		/// <param name="prefix">The prefix to use when looking up values in the value provider.</param>
+		/// <param name="excludedPropertiesSelectors">Array of expressions of excluded properties.</param>
+		/// <returns>Returns true when the included model properties were valid.</returns>
+		protected bool TryUpdateModelExcluding<M>(
+			M model,
+			string prefix,
+			params Expression<Func<M, object>>[] excludedPropertiesSelectors)
+			where M : class
+		{
+			if (model == null) throw new ArgumentNullException(nameof(model));
+			if (excludedPropertiesSelectors == null) throw new ArgumentNullException(nameof(excludedPropertiesSelectors));
+
+			string[] excludedProperties = GetPropertyNames(excludedPropertiesSelectors);
+
+			return TryUpdateModel(model, prefix, null, excludedProperties);
+		}
+
+		/// <summary>
+		/// Updates the specified model instance using values from the controller's current value provider,
+		/// excluding the specified properties.
+		/// </summary>
+		/// <typeparam name="M">The type of the model.</typeparam>
+		/// <param name="model">The model to update.</param>
+		/// <param name="excludedPropertiesSelectors">Array of expressions of excluded properties.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the included properties are not valid.</exception>
+		protected void UpdateModelExcluding<M>(
+			M model,
+			params Expression<Func<M, object>>[] excludedPropertiesSelectors)
+			where M : class
+		{
+			if (model == null) throw new ArgumentNullException(nameof(model));
+			if (excludedPropertiesSelectors == null) throw new ArgumentNullException(nameof(excludedPropertiesSelectors));
+
+			string[] excludedProperties = GetPropertyNames(excludedPropertiesSelectors);
+
+			UpdateModel(model, String.Empty, null, excludedProperties);
+		}
+
+		/// <summary>
+		/// Updates the specified model instance using values from the controller's current value provider
+		/// and included properties.
+		/// </summary>
+		/// <typeparam name="M">The type of the model.</typeparam>
+		/// <param name="model">The model to update.</param>
+		/// <param name="prefix">The prefix to use when looking up values in the value provider.</param>
+		/// <param name="excludedPropertiesSelectors">Array of expressions of excluded properties.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the included properties are not valid.</exception>
+		protected void UpdateModelExcluding<M>(
+			M model,
+			string prefix,
+			params Expression<Func<M, object>>[] excludedPropertiesSelectors)
+			where M : class
+		{
+			if (model == null) throw new ArgumentNullException(nameof(model));
+			if (excludedPropertiesSelectors == null) throw new ArgumentNullException(nameof(excludedPropertiesSelectors));
+
+			string[] excludedProperties = GetPropertyNames(excludedPropertiesSelectors);
+
+			UpdateModel(model, prefix, null, excludedProperties);
+		}
+
 		#endregion
 
 		#region Private methods
