@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// A provider which allows registration of model types

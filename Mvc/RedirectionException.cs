@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// An exception to force a redirection, usually because of insufficient conditions to

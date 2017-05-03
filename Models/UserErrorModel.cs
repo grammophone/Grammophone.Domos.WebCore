@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Grammophone.Domos.Mvc.Models
+namespace Grammophone.Domos.Web.Models
 {
 	/// <summary>
 	/// An error which is intended to be displayed to the user.

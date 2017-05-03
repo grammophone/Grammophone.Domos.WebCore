@@ -7,8 +7,8 @@
     <ProjectGuid>{0F38D9D5-2AF7-4EDD-82EA-65859D485333}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Grammophone.Domos.Mvc</RootNamespace>
-    <AssemblyName>Grammophone.Domos.Mvc</AssemblyName>
+    <RootNamespace>Grammophone.Domos.Web</RootNamespace>
+    <AssemblyName>Grammophone.Domos.Web</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Grammophone.Domos.Mvc.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Grammophone.Domos.Web.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Grammophone.Domos.Mvc.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Grammophone.Domos.Web.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -89,30 +89,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomValidator.cs" />
-    <Compile Include="CustomValidatorProvider.cs" />
-    <Compile Include="DomosApiExceptionFilterAttribute.cs" />
-    <Compile Include="ErrorMessages.Designer.cs">
+    <Compile Include="Mvc\CustomValidator.cs" />
+    <Compile Include="Mvc\CustomValidatorProvider.cs" />
+    <Compile Include="Http\DomosApiExceptionFilterAttribute.cs" />
+    <Compile Include="Http\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="GenericExpressionHelper.cs" />
-    <Compile Include="HtmlExtensions.cs" />
-    <Compile Include="KeyedEntityModelBinder.cs" />
-    <Compile Include="EntityModelBinderProvider.cs" />
-    <Compile Include="LogicApiController.cs" />
-    <Compile Include="LogicController.cs" />
-    <Compile Include="ModelController.cs" />
-    <Compile Include="ModelStateExtensions.cs" />
+    <Compile Include="Mvc\HtmlExtensions.cs" />
+    <Compile Include="Mvc\KeyedEntityModelBinder.cs" />
+    <Compile Include="Mvc\EntityModelBinderProvider.cs" />
+    <Compile Include="Http\LogicApiController.cs" />
+    <Compile Include="Mvc\LogicController.cs" />
+    <Compile Include="Mvc\ModelController.cs" />
+    <Compile Include="Mvc\ModelStateExtensions.cs" />
     <Compile Include="Models\UserErrorModel.cs" />
-    <Compile Include="ModelViewPage.cs" />
-    <Compile Include="RedirectionException.cs" />
-    <Compile Include="RedirectionExceptionFilterAttribute.cs" />
-    <Compile Include="ValueKeyedEntityModelBinder.cs" />
+    <Compile Include="Mvc\ModelViewPage.cs" />
+    <Compile Include="Mvc\RedirectionException.cs" />
+    <Compile Include="Mvc\RedirectionExceptionFilterAttribute.cs" />
+    <Compile Include="Mvc\ValueKeyedEntityModelBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewPage.cs" />
-    <Compile Include="ViewPageTrait.cs" />
+    <Compile Include="Mvc\ViewPage.cs" />
+    <Compile Include="Mvc\ViewPageTrait.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Grammophone.Caching\Grammophone.Caching.csproj">
@@ -172,8 +172,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ErrorMessages.fr.resx" />
-    <EmbeddedResource Include="ErrorMessages.resx">
+    <EmbeddedResource Include="Http\ErrorMessages.fr.resx" />
+    <EmbeddedResource Include="Http\ErrorMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

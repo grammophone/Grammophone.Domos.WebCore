@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// Common functionality for <see cref="ViewPage{U, D, S}"/> and <see cref="ModelViewPage{M, U, D, S}"/>

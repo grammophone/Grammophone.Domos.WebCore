@@ -8,16 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
-	/// Base for Razor views cooperating with the Domos system
-	/// having a strong-type model.
+	/// Base for Razor views cooperating with the Domos system.
 	/// In order to create a replacement for the default base,
-	/// subclass this to a specialized abstract class with one type argument
-	/// representing the model type.
+	/// subclass this to a specialized abstract class with no type arguments.
 	/// </summary>
-	/// <typeparam name="M">The type of the model.</typeparam>
 	/// <typeparam name="U">The type of the user.</typeparam>
 	/// <typeparam name="D">The type of the domain container, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
 	/// <typeparam name="S">The type of Domos logic session, derived from <see cref="LogicSession{U, D}"/>.</typeparam>
@@ -26,7 +23,7 @@ namespace Grammophone.Domos.Mvc
 	/// in http://haacked.com/archive/2011/02/21/changing-base-type-of-a-razor-view.aspx/
 	/// or use the "inherits" directive inside the Razor view.
 	/// </remarks>
-	public abstract class ModelViewPage<M, U, D, S> : WebViewPage<M>
+	public abstract class ViewPage<U, D, S> : WebViewPage
 		where U : User
 		where D : IUsersDomainContainer<U>
 		where S : LogicSession<U, D>, new()
@@ -42,7 +39,7 @@ namespace Grammophone.Domos.Mvc
 		/// <summary>
 		/// Create.
 		/// </summary>
-		public ModelViewPage()
+		public ViewPage()
 		{
 			trait = new ViewPageTrait<U, D, S>(this);
 		}
@@ -73,13 +70,10 @@ namespace Grammophone.Domos.Mvc
 	}
 
 	/// <summary>
-	/// Base for Razor views cooperating with the Domos system
-	/// having a strong-type model.
+	/// Base for Razor views cooperating with the Domos system.
 	/// In order to create a replacement for the default base,
-	/// subclass this to a specialized abstract class with one type argument
-	/// representing the model type.
+	/// subclass this to a specialized abstract class with no type arguments.
 	/// </summary>
-	/// <typeparam name="M">The type of the model.</typeparam>
 	/// <typeparam name="U">The type of the user.</typeparam>
 	/// <typeparam name="D">The type of the domain container, derived from <see cref="IUsersDomainContainer{U}"/>.</typeparam>
 	/// <typeparam name="S">
@@ -91,7 +85,7 @@ namespace Grammophone.Domos.Mvc
 	/// in http://haacked.com/archive/2011/02/21/changing-base-type-of-a-razor-view.aspx/
 	/// or use the "inherits" directive inside the Razor view.
 	/// </remarks>
-	public abstract class ModelViewPage<M, U, D, S, PD> : ModelViewPage<M, U, D, S>
+	public abstract class ViewPage<U, D, S, PD> : ViewPage<U, D, S>
 		where U : User
 		where D : IUsersDomainContainer<U>
 		where S : LogicSession<U, D>, IPublicDomainProvider<D, PD>, new()

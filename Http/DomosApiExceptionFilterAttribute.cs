@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Web.Http.Filters;
 using Grammophone.DataAccess;
 using Grammophone.Domos.Logic;
-using Grammophone.Domos.Mvc.Models;
+using Grammophone.Domos.Web.Models;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web.Http
 {
 	/// <summary>
 	/// Exception filter for Web API which exploits <see cref="UserException"/>,

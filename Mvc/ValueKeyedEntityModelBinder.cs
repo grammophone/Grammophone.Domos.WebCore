@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Grammophone.Domos.Domain;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// Binder for entities derived from <see cref="IEntityWithID{K}"/>,

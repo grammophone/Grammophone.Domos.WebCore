@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Grammophone.Domos.Mvc
+namespace Grammophone.Domos.Web
 {
 	/// <summary>
 	/// Helper class to get the model names from geneereic lambda expressions.
