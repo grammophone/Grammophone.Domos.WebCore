@@ -17,7 +17,7 @@ namespace Grammophone.Domos.Mvc
 	/// <see cref="AccessDeniedException"/> and <see cref="IntegrityViolationException"/>
 	/// descendants to serve meaningful responses.
 	/// </summary>
-	public class DomosExceptionFilterAttribute : ExceptionFilterAttribute
+	public class DomosApiExceptionFilterAttribute : ExceptionFilterAttribute
 	{
 		/// <summary>
 		/// Filters the exceptions and transforms response.
@@ -27,14 +27,13 @@ namespace Grammophone.Domos.Mvc
 			var exception = actionExecutedContext.Exception;
 
 			if (exception is AccessDeniedException
-				|| exception is EntityAccessDeniedException
 				|| exception is IntegrityViolationException)
 			{
 				var statusCode = HttpStatusCode.InternalServerError;
 
 				string userMessage = ErrorMessages.GENERIC_ERROR;
 
-				if (exception is AccessDeniedException || exception is EntityAccessDeniedException)
+				if (exception is AccessDeniedException)
 				{
 					statusCode = HttpStatusCode.Forbidden;
 					userMessage = ErrorMessages.ACCESS_DENIED;

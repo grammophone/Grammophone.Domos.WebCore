@@ -91,7 +91,7 @@
   <ItemGroup>
     <Compile Include="CustomValidator.cs" />
     <Compile Include="CustomValidatorProvider.cs" />
-    <Compile Include="DomosExceptionFilterAttribute.cs" />
+    <Compile Include="DomosApiExceptionFilterAttribute.cs" />
     <Compile Include="ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -107,6 +107,8 @@
     <Compile Include="ModelStateExtensions.cs" />
     <Compile Include="Models\UserErrorModel.cs" />
     <Compile Include="ModelViewPage.cs" />
+    <Compile Include="RedirectionException.cs" />
+    <Compile Include="RedirectionExceptionFilterAttribute.cs" />
     <Compile Include="ValueKeyedEntityModelBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewPage.cs" />
