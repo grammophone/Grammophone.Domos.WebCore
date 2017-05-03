@@ -107,8 +107,8 @@
     <Compile Include="Mvc\ModelStateExtensions.cs" />
     <Compile Include="Models\UserErrorModel.cs" />
     <Compile Include="Mvc\ModelViewPage.cs" />
-    <Compile Include="Mvc\RedirectionException.cs" />
-    <Compile Include="Mvc\RedirectionExceptionFilterAttribute.cs" />
+    <Compile Include="Mvc\ActionException.cs" />
+    <Compile Include="Mvc\ActionExceptionFilterAttribute.cs" />
     <Compile Include="Mvc\ValueKeyedEntityModelBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mvc\ViewPage.cs" />
