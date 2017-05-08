@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 
 namespace Grammophone.Domos.Web.Mvc
 {
@@ -51,7 +52,7 @@ namespace Grammophone.Domos.Web.Mvc
 			if (htmlHelper == null) throw new ArgumentNullException("htmlHelper");
 			if (fieldSelector == null) throw new ArgumentNullException("fieldSelector");
 
-			string fieldPath = ExpressionHelper.GetExpressionText(fieldSelector);
+			string fieldPath = htmlHelper.NameFor(fieldSelector).ToString();
 
 			return htmlHelper.ViewData.ModelState.IsValidField(fieldPath);
 		}
@@ -92,6 +93,7 @@ namespace Grammophone.Domos.Web.Mvc
 			string fragment)
 		{
 			bool isValid = IsValid(htmlHelper, fieldSelector);
+
 			return When(htmlHelper, !isValid, fragment);
 		}
 
