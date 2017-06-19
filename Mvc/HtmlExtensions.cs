@@ -134,16 +134,22 @@ namespace Grammophone.Domos.Web.Mvc
 			if (partialViewName == null) throw new ArgumentNullException(nameof(partialViewName));
 			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
 
-			var fieldMetadata = ModelMetadata.FromLambdaExpression(modelPropertyExpression, htmlHelper.ViewData);
+			var viewData = htmlHelper.ViewData;
+
+			string propertyName = ExpressionHelper.GetExpressionText(modelPropertyExpression);
+
+			string fullPropertyName = viewData.TemplateInfo.GetFullHtmlFieldName(propertyName);
+
+			TField propertyValue = modelPropertyExpression.Compile().Invoke(viewData.Model);
 
 			return htmlHelper.Partial(
 				partialViewName,
-				fieldMetadata.Model,
-				new ViewDataDictionary<TField>(htmlHelper.ViewData)
+				propertyValue,
+				new ViewDataDictionary<TField>
 				{
 					TemplateInfo = new TemplateInfo
 					{
-						HtmlFieldPrefix = fieldMetadata.PropertyName
+						HtmlFieldPrefix = fullPropertyName,
 					}
 				});
 		}
