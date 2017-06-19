@@ -111,5 +111,41 @@ namespace Grammophone.Domos.Web.Mvc
 		{
 			return htmlHelper.WhenNotValid(modelPropertyExpression, "has-error");
 		}
+
+		/// <summary>
+		/// Show a partial view for a part of the view's model.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the main model.</typeparam>
+		/// <typeparam name="TField">The type of the part in the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="partialViewName">The name of the partial view template.</param>
+		/// <param name="modelPropertyExpression">An expression that defines the part inside the main model.</param>
+		/// <returns>Returns the rendered partial view.</returns>
+		/// <remarks>
+		/// This method takes care of the model prefix which the partial view must include
+		/// in its input field expressions.
+		/// </remarks>
+		public static MvcHtmlString PartialFor<TModel, TField>(
+			this HtmlHelper<TModel> htmlHelper,
+			string partialViewName,
+			Expression<Func<TModel, TField>> modelPropertyExpression)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (partialViewName == null) throw new ArgumentNullException(nameof(partialViewName));
+			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
+
+			var fieldMetadata = ModelMetadata.FromLambdaExpression(modelPropertyExpression, htmlHelper.ViewData);
+
+			return htmlHelper.Partial(
+				partialViewName,
+				fieldMetadata.Model,
+				new ViewDataDictionary<TField>(htmlHelper.ViewData)
+				{
+					TemplateInfo = new TemplateInfo
+					{
+						HtmlFieldPrefix = fieldMetadata.PropertyName
+					}
+				});
+		}
 	}
 }
