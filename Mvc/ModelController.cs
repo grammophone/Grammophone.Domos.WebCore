@@ -16,6 +16,56 @@ namespace Grammophone.Domos.Web.Mvc
 		#region Protected methods
 
 		/// <summary>
+		/// Render the output of a view to a string.
+		/// </summary>
+		/// <param name="viewPath">The path to the view.</param>
+		/// <param name="model">The model for the view.</param>
+		/// <param name="partial">If true, the view is partial.</param>
+		/// <returns>Returns the string from the view rendering.</returns>
+		protected string RenderViewToString(
+			string viewPath,
+			object model = null,
+			bool partial = true)
+		{
+			if (viewPath == null) throw new ArgumentNullException(nameof(viewPath));
+
+			var controllerContext = this.ControllerContext;
+
+			// First find the ViewEngine for this view.
+			ViewEngineResult viewEngineResult = null;
+
+			if (partial)
+				viewEngineResult = ViewEngines.Engines.FindPartialView(controllerContext, viewPath);
+			else
+				viewEngineResult = ViewEngines.Engines.FindView(controllerContext, viewPath, null);
+
+			if (viewEngineResult == null)
+				throw new ArgumentException("View cannot be found.", nameof(viewPath));
+
+			// Get the view and attach the model to view data.
+			var view = viewEngineResult.View;
+			controllerContext.Controller.ViewData.Model = model;
+
+			string result = null;
+
+			using (var writer = new System.IO.StringWriter())
+			{
+				var viewContext = new ViewContext(
+					controllerContext, 
+					view,
+					controllerContext.Controller.ViewData,
+					controllerContext.Controller.TempData,
+					writer);
+
+				view.Render(viewContext, writer);
+
+				result = writer.ToString();
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Attempt to update the specified model instance using values from the controller's current value provider.
 		/// </summary>
 		/// <typeparam name="M">The type of the model.</typeparam>
