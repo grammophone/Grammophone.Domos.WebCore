@@ -110,6 +110,7 @@
     <Compile Include="Mvc\ActionException.cs" />
     <Compile Include="Mvc\ActionExceptionFilterAttribute.cs" />
     <Compile Include="Mvc\ValueKeyedEntityModelBinder.cs" />
+    <Compile Include="Mvc\ValueProviderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mvc\ViewPage.cs" />
     <Compile Include="Mvc\ViewPageTrait.cs" />

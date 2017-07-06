@@ -61,9 +61,7 @@ namespace Grammophone.Domos.Web.Http
 				return;
 			}
 
-			var userException = exception as UserException;
-
-			if (userException != null)
+			if (exception is UserException userException)
 			{
 				actionExecutedContext.Response =
 					actionExecutedContext.Request.CreateResponse(
