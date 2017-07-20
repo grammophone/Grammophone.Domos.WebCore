@@ -98,6 +98,7 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="GenericExpressionHelper.cs" />
+    <Compile Include="Mvc\HandleAjaxErrorAttribute.cs" />
     <Compile Include="Mvc\HtmlExtensions.cs" />
     <Compile Include="Mvc\KeyedEntityModelBinder.cs" />
     <Compile Include="Mvc\EntityModelBinderProvider.cs" />

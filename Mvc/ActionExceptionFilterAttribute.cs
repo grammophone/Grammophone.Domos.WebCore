@@ -20,9 +20,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="filterContext">The filter context.</param>
 		public void OnException(ExceptionContext filterContext)
 		{
-			var actionException = filterContext.Exception as ActionException;
-
-			if (actionException != null)
+			if (filterContext.Exception is ActionException actionException)
 			{
 				filterContext.Result = actionException.TargetActionResult;
 
