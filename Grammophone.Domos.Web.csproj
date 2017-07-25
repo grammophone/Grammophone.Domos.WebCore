@@ -92,7 +92,7 @@
     <Compile Include="Mvc\CustomValidator.cs" />
     <Compile Include="Mvc\CustomValidatorProvider.cs" />
     <Compile Include="Http\DomosApiExceptionFilterAttribute.cs" />
-    <Compile Include="Http\ErrorMessages.Designer.cs">
+    <Compile Include="ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
@@ -174,8 +174,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Http\ErrorMessages.fr.resx" />
-    <EmbeddedResource Include="Http\ErrorMessages.resx">
+    <EmbeddedResource Include="ErrorMessages.fr.resx" />
+    <EmbeddedResource Include="ErrorMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
