@@ -11,7 +11,7 @@ namespace Grammophone.Domos.Web.Mvc
 	/// <summary>
 	/// Selects the <see cref="KeyedEntityModelBinder{K}"/> for binding to
 	/// entities implementing the <see cref="IEntityWithID{K}"/> interface.
-	/// Hides <see cref="IUserTrackingEntity"/> and <see cref="IUserGroupTrackingEntity{U}"/>
+	/// Hides <see cref="IUserTrackingEntity"/>
 	/// properties from binding.
 	/// </summary>
 	public class EntityModelBinderProvider : IModelBinderProvider

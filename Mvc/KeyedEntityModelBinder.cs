@@ -14,7 +14,7 @@ namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// Binder for entities derived from <see cref="IEntityWithID{K}"/>.
-	/// Hides the <see cref="IUserTrackingEntity{U}"/> and <see cref="IUserGroupTrackingEntity{U}"/>
+	/// Hides the <see cref="IUserTrackingEntity{U}"/>
 	/// properties from binding.
 	/// </summary>
 	/// <typeparam name="K">The type of the key of the entity.</typeparam>
