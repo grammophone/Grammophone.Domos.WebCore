@@ -90,7 +90,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\FieldModel.cs" />
-    <Compile Include="Models\StatePathExecutionModel.cs" />
+    <Compile Include="Models\ActionExecutionModel.cs" />
+    <Compile Include="Mvc\ActionExecutionModelBinderProvider.cs" />
     <Compile Include="Mvc\CustomValidator.cs" />
     <Compile Include="Mvc\CustomValidatorProvider.cs" />
     <Compile Include="Http\DomosApiExceptionFilterAttribute.cs" />
@@ -112,8 +113,8 @@
     <Compile Include="Mvc\ModelViewPage.cs" />
     <Compile Include="Mvc\ActionException.cs" />
     <Compile Include="Mvc\ActionExceptionFilterAttribute.cs" />
-    <Compile Include="Mvc\StatePathExecutionModelBinder.cs" />
-    <Compile Include="Mvc\StatePathParameterDescriptor.cs" />
+    <Compile Include="Mvc\ActionExecutionModelBinder.cs" />
+    <Compile Include="Mvc\ActionParameterDescriptor.cs" />
     <Compile Include="Mvc\ValueKeyedEntityModelBinder.cs" />
     <Compile Include="Mvc\ValueProviderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

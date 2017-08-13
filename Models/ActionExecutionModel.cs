@@ -8,24 +8,31 @@ using System.Web.Mvc;
 namespace Grammophone.Domos.Web.Models
 {
 	/// <summary>
-	/// Model for the execution of a state path.
+	/// Model for the execution of an action.
 	/// </summary>
-	public abstract class StatePathExecutionModel
+	public abstract class ActionExecutionModel
 	{
+		#region Construction
+
+		/// <summary>
+		/// Create.
+		/// </summary>
+		public ActionExecutionModel()
+		{
+			this.Parameters = new Dictionary<string, object>();
+		}
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
-		/// The ID of the stateful object upon which the path is executed.
+		/// The code name of the action being executed.
 		/// </summary>
-		public long StatefulObjectID { get; set; }
+		public string ActionCodeName { get; set; }
 
 		/// <summary>
-		/// The code name of the state path.
-		/// </summary>
-		public string StatePathCodeName { get; set; }
-
-		/// <summary>
-		/// The collection of parameters specified for the execution of the path, indexed by their key.
+		/// The collection of parameters specified for the action, indexed by their key.
 		/// </summary>
 		public IDictionary<string, object> Parameters { get; }
 
@@ -34,22 +41,22 @@ namespace Grammophone.Domos.Web.Models
 		#region Public methods
 
 		/// <summary>
-		/// Get the fields of state path parameters, taking into account
+		/// Get the fields of the action parameters, taking into account
 		/// the model prefix.
 		/// </summary>
 		/// <param name="viewContext">The context of the view being rendered.</param>
 		/// <returns>
-		/// Returns collection of fields whise <see cref="FieldModel{T}.FieldName"/>
+		/// Returns the collection of fields whose <see cref="FieldModel{T}.FieldName"/>
 		/// is the name of each parameter, taking into account any prefix.
 		/// </returns>
 		public IEnumerable<FieldModel<Logic.ParameterSpecification>> GetParameterFields(ViewContext viewContext)
 		{
 			if (viewContext == null) throw new ArgumentNullException(nameof(viewContext));
 
-			if (this.StatePathCodeName == null)
-				throw new ApplicationException($"The {nameof(StatePathCodeName)} property is not set.");
+			if (this.ActionCodeName == null)
+				throw new ApplicationException($"The {nameof(ActionCodeName)} property is not set.");
 
-			var parameterSpecificationsByKey = GetParameterSpecifications(this.StatePathCodeName);
+			var parameterSpecificationsByKey = GetParameterSpecifications(this.ActionCodeName);
 
 			return from ps in parameterSpecificationsByKey.Values
 						 orderby ps.Caption
@@ -61,11 +68,11 @@ namespace Grammophone.Domos.Web.Models
 		#region Protected methods
 
 		/// <summary>
-		/// Get the parameter specifications for the given <see cref="StatePathCodeName"/>.
+		/// Get the parameter specifications for the action implied by <see cref="ActionCodeName"/>.
 		/// </summary>
 		/// <param name="statePathCodeName">The code name of the state path.</param>
 		/// <remarks>
-		/// In order to implement this method,
+		/// For example, in order to implement this method for workflow state paths,
 		/// see <see cref="Logic.WorkflowManager{U, BST, D, S, ST, SO, C}.GetPathParameterSpecifications(string, string)"/>.
 		/// </remarks>
 		protected internal abstract IReadOnlyDictionary<string, Logic.ParameterSpecification> GetParameterSpecifications(string statePathCodeName);

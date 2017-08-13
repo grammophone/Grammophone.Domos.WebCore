@@ -10,7 +10,7 @@ namespace Grammophone.Domos.Web.Mvc
 	/// <summary>
 	/// Dynamic property descriptor for <see cref="Logic.ParameterSpecification"/>.
 	/// </summary>
-	internal class StatePathParameterDescriptor : PropertyDescriptor
+	internal class ActionParameterDescriptor : PropertyDescriptor
 	{
 		#region Constants
 
@@ -24,7 +24,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// Create.
 		/// </summary>
 		/// <param name="parameterSpecification">The state path parameter specification.</param>
-		public StatePathParameterDescriptor(Logic.ParameterSpecification parameterSpecification)
+		public ActionParameterDescriptor(Logic.ParameterSpecification parameterSpecification)
 			: base(parameterSpecification.Key, parameterSpecification.ValidationAttributes.ToArray())
 		{
 			this.ParameterSpecification = parameterSpecification;
@@ -40,9 +40,9 @@ namespace Grammophone.Domos.Web.Mvc
 		public Logic.ParameterSpecification ParameterSpecification { get; }
 
 		/// <summary>
-		/// returns the type of <see cref="Models.StatePathExecutionModel"/>.
+		/// returns the type of <see cref="Models.ActionExecutionModel"/>.
 		/// </summary>
-		public override Type ComponentType => typeof(Models.StatePathExecutionModel);
+		public override Type ComponentType => typeof(Models.ActionExecutionModel);
 
 		/// <summary>
 		/// Returns false.
@@ -72,21 +72,21 @@ namespace Grammophone.Domos.Web.Mvc
 		#region Public methods
 
 		/// <summary>
-		/// Returns true if the <paramref name="component"/> is <see cref="Models.StatePathExecutionModel"/>.
+		/// Returns true if the <paramref name="component"/> is <see cref="Models.ActionExecutionModel"/>.
 		/// </summary>
 		public override bool CanResetValue(object component)
 		{
-			return component is Models.StatePathExecutionModel;
+			return component is Models.ActionExecutionModel;
 		}
 
 		/// <summary>
-		/// If the <paramref name="component"/> is <see cref="Models.StatePathExecutionModel"/>,
-		/// returns the value in its <see cref="Models.StatePathExecutionModel.Parameters"/> dictionary
+		/// If the <paramref name="component"/> is <see cref="Models.ActionExecutionModel"/>,
+		/// returns the value in its <see cref="Models.ActionExecutionModel.Parameters"/> dictionary
 		/// under the <see cref="Logic.ParameterSpecification.Key"/> of <see cref="ParameterSpecification"/>.
 		/// </summary>
 		public override object GetValue(object component)
 		{
-			if (component is Models.StatePathExecutionModel statePathExecutionModel)
+			if (component is Models.ActionExecutionModel statePathExecutionModel)
 			{
 				return statePathExecutionModel.Parameters[this.ParameterSpecification.Key];
 			}
@@ -97,13 +97,13 @@ namespace Grammophone.Domos.Web.Mvc
 		}
 
 		/// <summary>
-		/// If the <paramref name="component"/> is <see cref="Models.StatePathExecutionModel"/>,
-		/// resets the value in its <see cref="Models.StatePathExecutionModel.Parameters"/> dictionary
+		/// If the <paramref name="component"/> is <see cref="Models.ActionExecutionModel"/>,
+		/// resets the value in its <see cref="Models.ActionExecutionModel.Parameters"/> dictionary
 		/// under the <see cref="Logic.ParameterSpecification.Key"/> of <see cref="ParameterSpecification"/>.
 		/// </summary>
 		public override void ResetValue(object component)
 		{
-			if (component is Models.StatePathExecutionModel statePathExecutionModel)
+			if (component is Models.ActionExecutionModel statePathExecutionModel)
 			{
 				object value = null;
 
@@ -121,14 +121,14 @@ namespace Grammophone.Domos.Web.Mvc
 		}
 
 		/// <summary>
-		/// If the <paramref name="component"/> is <see cref="Models.StatePathExecutionModel"/>,
+		/// If the <paramref name="component"/> is <see cref="Models.ActionExecutionModel"/>,
 		/// checks type compatibility and
-		/// sets the value in its <see cref="Models.StatePathExecutionModel.Parameters"/> dictionary
+		/// sets the value in its <see cref="Models.ActionExecutionModel.Parameters"/> dictionary
 		/// under the <see cref="Logic.ParameterSpecification.Key"/> of <see cref="ParameterSpecification"/>.
 		/// </summary>
 		public override void SetValue(object component, object value)
 		{
-			if (component is Models.StatePathExecutionModel statePathExecutionModel)
+			if (component is Models.ActionExecutionModel statePathExecutionModel)
 			{
 				if (value == null && this.ParameterSpecification.Type.IsValueType
 					|| value != null && !this.ParameterSpecification.Type.IsAssignableFrom(value.GetType()))
@@ -146,10 +146,10 @@ namespace Grammophone.Domos.Web.Mvc
 
 		/// <summary>
 		/// Returns true if the <paramref name="component"/> is
-		/// a <see cref="Models.StatePathExecutionModel"/>.
+		/// a <see cref="Models.ActionExecutionModel"/>.
 		/// </summary>
 		public override bool ShouldSerializeValue(object component)
-			=> component is Models.StatePathExecutionModel;
+			=> component is Models.ActionExecutionModel;
 
 		#endregion
 	}

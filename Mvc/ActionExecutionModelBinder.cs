@@ -10,16 +10,16 @@ using Grammophone.Domos.Web.Models;
 namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
-	/// Binds a <see cref="StatePathExecutionModel"/>.
+	/// Binds a <see cref="ActionExecutionModel"/>.
 	/// </summary>
-	public class StatePathExecutionModelBinder : DefaultModelBinder
+	public class ActionExecutionModelBinder : DefaultModelBinder
 	{
 		#region Construction
 
 		/// <summary>
 		/// Create.
 		/// </summary>
-		public StatePathExecutionModelBinder()
+		public ActionExecutionModelBinder()
 		{
 		}
 
@@ -35,13 +35,13 @@ namespace Grammophone.Domos.Web.Mvc
 		{
 			var propertyDescriptors = base.GetModelProperties(controllerContext, bindingContext);
 
-			if (bindingContext.Model is StatePathExecutionModel statePathExecutionModel)
+			if (bindingContext.Model is ActionExecutionModel statePathExecutionModel)
 			{
-				var defaultParametersDescriptor = propertyDescriptors.Find(nameof(StatePathExecutionModel.Parameters), false);
+				var defaultParametersDescriptor = propertyDescriptors.Find(nameof(ActionExecutionModel.Parameters), false);
 
 				if (defaultParametersDescriptor != null) propertyDescriptors.Remove(defaultParametersDescriptor);
 
-				string statePathCodeName = statePathExecutionModel.StatePathCodeName;
+				string statePathCodeName = statePathExecutionModel.ActionCodeName;
 
 				// If the StatePathCodeName proeprty is not yet bound, search in the value provider.
 				if (statePathCodeName == null)
@@ -50,8 +50,8 @@ namespace Grammophone.Domos.Web.Mvc
 
 					string statePathFieldName =
 						String.IsNullOrEmpty(prefix) ?
-						nameof(StatePathExecutionModel.StatePathCodeName) :
-						$"{prefix}.{nameof(StatePathExecutionModel.StatePathCodeName)}";
+						nameof(ActionExecutionModel.ActionCodeName) :
+						$"{prefix}.{nameof(ActionExecutionModel.ActionCodeName)}";
 
 					var statePathCodeNameResult = bindingContext.ValueProvider.GetValue(statePathFieldName);
 
@@ -67,7 +67,7 @@ namespace Grammophone.Domos.Web.Mvc
 
 				foreach (var parameterSpecification in parameterSpecificationsByKey.Values)
 				{
-					propertyDescriptors.Add(new StatePathParameterDescriptor(parameterSpecification));
+					propertyDescriptors.Add(new ActionParameterDescriptor(parameterSpecification));
 				}
 			}
 
