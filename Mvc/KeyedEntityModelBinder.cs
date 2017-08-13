@@ -158,7 +158,6 @@ namespace Grammophone.Domos.Web.Mvc
 					case "CreatorUserID":
 					case "LastModifierUserID":
 					case "LastModifierUser":
-					case "OwningUsers":
 					case "OwningUserID":
 					case "OwningUser":
 						continue;
