@@ -14,7 +14,7 @@ namespace Grammophone.Domos.Web.Mvc
 	{
 		#region Constants
 
-		private const string NOT_A_STATE_PATH_EXECUTION = "The component is not a state path execution model.";
+		private const string NOT_AN_ACTION_EXECUTION = "The component is not an action execution model.";
 
 		#endregion
 
@@ -92,7 +92,7 @@ namespace Grammophone.Domos.Web.Mvc
 			}
 			else
 			{
-				throw new ApplicationException(NOT_A_STATE_PATH_EXECUTION);
+				throw new ApplicationException(NOT_AN_ACTION_EXECUTION);
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace Grammophone.Domos.Web.Mvc
 			}
 			else
 			{
-				throw new ApplicationException(NOT_A_STATE_PATH_EXECUTION);
+				throw new ApplicationException(NOT_AN_ACTION_EXECUTION);
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace Grammophone.Domos.Web.Mvc
 			}
 			else
 			{
-				throw new ApplicationException(NOT_A_STATE_PATH_EXECUTION);
+				throw new ApplicationException(NOT_AN_ACTION_EXECUTION);
 			}
 		}
 

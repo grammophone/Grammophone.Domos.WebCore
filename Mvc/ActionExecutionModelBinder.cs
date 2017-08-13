@@ -41,29 +41,29 @@ namespace Grammophone.Domos.Web.Mvc
 
 				if (defaultParametersDescriptor != null) propertyDescriptors.Remove(defaultParametersDescriptor);
 
-				string statePathCodeName = statePathExecutionModel.ActionCodeName;
+				string actionCodeName = statePathExecutionModel.ActionCodeName;
 
-				// If the StatePathCodeName proeprty is not yet bound, search in the value provider.
-				if (statePathCodeName == null)
+				// If the ActionCodeName property is not yet bound, search in the value provider.
+				if (actionCodeName == null)
 				{
-					string prefix = controllerContext.Controller.ViewData.TemplateInfo.HtmlFieldPrefix;
+					string prefix = controllerContext.Controller.ViewData?.TemplateInfo?.HtmlFieldPrefix;
 
-					string statePathFieldName =
+					string actionCodeFieldName =
 						String.IsNullOrEmpty(prefix) ?
 						nameof(ActionExecutionModel.ActionCodeName) :
 						$"{prefix}.{nameof(ActionExecutionModel.ActionCodeName)}";
 
-					var statePathCodeNameResult = bindingContext.ValueProvider.GetValue(statePathFieldName);
+					var actionCodeNameResult = bindingContext.ValueProvider.GetValue(actionCodeFieldName);
 
-					statePathCodeName = statePathCodeNameResult?.AttemptedValue;
+					actionCodeName = actionCodeNameResult?.AttemptedValue;
 					
-					if (statePathCodeName == null)
+					if (actionCodeName == null)
 					{
-						throw new ApplicationException("The state path code name is not specified in the model.");
+						throw new ApplicationException("The action code name is not specified in the model.");
 					}
 				}
 
-				var parameterSpecificationsByKey = statePathExecutionModel.GetParameterSpecifications(statePathCodeName);
+				var parameterSpecificationsByKey = statePathExecutionModel.GetParameterSpecifications(actionCodeName);
 
 				foreach (var parameterSpecification in parameterSpecificationsByKey.Values)
 				{
