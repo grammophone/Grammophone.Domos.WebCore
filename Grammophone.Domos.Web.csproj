@@ -89,8 +89,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\FieldModel.cs" />
     <Compile Include="Models\ActionExecutionModel.cs" />
+    <Compile Include="Mvc\ActionExecutionMetadata.cs" />
+    <Compile Include="Mvc\ActionExecutionModelValidationProvider.cs" />
+    <Compile Include="Mvc\ActionExecutionTypeDescriptor.cs" />
+    <Compile Include="Mvc\BindingSetup.cs" />
+    <Compile Include="Mvc\DomosValidatorProvider.cs" />
+    <Compile Include="Mvc\DomosMetadataProvider.cs" />
     <Compile Include="Mvc\ActionExecutionModelBinderProvider.cs" />
     <Compile Include="Mvc\CustomValidator.cs" />
     <Compile Include="Mvc\CustomValidatorProvider.cs" />

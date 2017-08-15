@@ -11,8 +11,7 @@ namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// A provider which allows registration of model types
-	/// to be handled by <see cref="CustomValidator"/> and defering other types to 
-	/// the default ASP.NET <see cref="DataAnnotationsModelValidatorProvider"/>.
+	/// to be handled by <see cref="CustomValidator"/>.
 	/// </summary>
 	public class CustomValidatorProvider : ModelValidatorProvider
 	{

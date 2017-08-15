@@ -37,10 +37,6 @@ namespace Grammophone.Domos.Web.Mvc
 
 			if (bindingContext.Model is ActionExecutionModel statePathExecutionModel)
 			{
-				var defaultParametersDescriptor = propertyDescriptors.Find(nameof(ActionExecutionModel.Parameters), false);
-
-				if (defaultParametersDescriptor != null) propertyDescriptors.Remove(defaultParametersDescriptor);
-
 				string actionCodeName = statePathExecutionModel.ActionCodeName;
 
 				// If the ActionCodeName property is not yet bound, search in the value provider.
@@ -56,7 +52,7 @@ namespace Grammophone.Domos.Web.Mvc
 					var actionCodeNameResult = bindingContext.ValueProvider.GetValue(actionCodeFieldName);
 
 					actionCodeName = actionCodeNameResult?.AttemptedValue;
-					
+
 					if (actionCodeName == null)
 					{
 						throw new ApplicationException("The action code name is not specified in the model.");
@@ -65,13 +61,12 @@ namespace Grammophone.Domos.Web.Mvc
 
 				var parameterSpecificationsByKey = statePathExecutionModel.GetParameterSpecifications(actionCodeName);
 
-				foreach (var parameterSpecification in parameterSpecificationsByKey.Values)
-				{
-					propertyDescriptors.Add(new ActionParameterDescriptor(parameterSpecification));
-				}
+				return ActionExecutionTypeDescriptor.AugmentPropertiesWithParameters(propertyDescriptors, parameterSpecificationsByKey);
 			}
-
-			return propertyDescriptors;
+			else
+			{
+				return propertyDescriptors;
+			}
 		}
 
 		#endregion

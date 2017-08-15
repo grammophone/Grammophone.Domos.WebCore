@@ -41,26 +41,17 @@ namespace Grammophone.Domos.Web.Models
 		#region Public methods
 
 		/// <summary>
-		/// Get the fields of the action parameters, taking into account
-		/// the model prefix.
+		/// Get the parameters corresponding to <see cref="ActionCodeName"/>, indexed by their key.
 		/// </summary>
-		/// <param name="viewContext">The context of the view being rendered.</param>
-		/// <returns>
-		/// Returns the collection of fields whose <see cref="FieldModel{T}.FieldName"/>
-		/// is the name of each parameter, taking into account any prefix.
-		/// </returns>
-		public IEnumerable<FieldModel<Logic.ParameterSpecification>> GetParameterFields(ViewContext viewContext)
+		/// <exception cref="ApplicationException">
+		/// Thrown when the <see cref="ActionCodeName"/> property is not set.
+		/// </exception>
+		public IReadOnlyDictionary<string, Logic.ParameterSpecification> GetParameterSpecifications()
 		{
-			if (viewContext == null) throw new ArgumentNullException(nameof(viewContext));
-
 			if (this.ActionCodeName == null)
 				throw new ApplicationException($"The {nameof(ActionCodeName)} property is not set.");
 
-			var parameterSpecificationsByKey = GetParameterSpecifications(this.ActionCodeName);
-
-			return from ps in parameterSpecificationsByKey.Values
-						 orderby ps.Caption
-						 select new FieldModel<Logic.ParameterSpecification>(GetFieldName(viewContext, ps), ps);
+			return GetParameterSpecifications(this.ActionCodeName);
 		}
 
 		#endregion
@@ -76,23 +67,6 @@ namespace Grammophone.Domos.Web.Models
 		/// see <see cref="Logic.WorkflowManager{U, BST, D, S, ST, SO, C}.GetPathParameterSpecifications(string, string)"/>.
 		/// </remarks>
 		protected internal abstract IReadOnlyDictionary<string, Logic.ParameterSpecification> GetParameterSpecifications(string statePathCodeName);
-
-		#endregion
-
-		#region Private methods
-
-		private static string GetFieldName(ViewContext viewContext, Logic.ParameterSpecification parameterSpecification)
-		{
-			if (viewContext == null) throw new ArgumentNullException(nameof(viewContext));
-			if (parameterSpecification == null) throw new ArgumentNullException(nameof(parameterSpecification));
-
-			string prefix = viewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-
-			if (String.IsNullOrEmpty(prefix))
-				return $"Execution.{parameterSpecification.Key}";
-			else
-				return $"{prefix}.Execution.{parameterSpecification.Key}";
-		}
 
 		#endregion
 	}
