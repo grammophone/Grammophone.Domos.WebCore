@@ -17,8 +17,34 @@ namespace Grammophone.Domos.Web.Models
 		/// <summary>
 		/// Create.
 		/// </summary>
-		public ActionExecutionModel()
+		/// <param name="actionCodeName">The code name of the action being executed.</param>
+		public ActionExecutionModel(string actionCodeName)
 		{
+			if (actionCodeName == null) throw new ArgumentNullException(nameof(actionCodeName));
+
+			this.ActionCodeName = actionCodeName;
+			this.Parameters = new Dictionary<string, object>();
+		}
+
+		/// <summary>
+		/// Create.
+		/// </summary>
+		/// <param name="valueProvider">The value provider which will supply the <see cref="ActionCodeName"/> property.</param>
+		/// <param name="prefix">Optional prefix for the key in <paramref name="valueProvider"/>.</param>
+		public ActionExecutionModel(IValueProvider valueProvider, string prefix = null)
+		{
+			if (valueProvider == null) throw new ArgumentNullException(nameof(valueProvider));
+
+			string actionCodeNameKey = prefix != null ? $"{prefix}.{nameof(ActionCodeName)}" : nameof(ActionCodeName);
+
+			var actionCodeNameResult = valueProvider.GetValue(actionCodeNameKey);
+
+			if (actionCodeNameResult == null || String.IsNullOrEmpty(actionCodeNameResult.AttemptedValue))
+			{
+				throw new ApplicationException($"The value provider does not contain an item under key '{actionCodeNameKey}'.");
+			}
+
+			this.ActionCodeName = actionCodeNameResult.AttemptedValue;
 			this.Parameters = new Dictionary<string, object>();
 		}
 
@@ -29,7 +55,7 @@ namespace Grammophone.Domos.Web.Models
 		/// <summary>
 		/// The code name of the action being executed.
 		/// </summary>
-		public string ActionCodeName { get; set; }
+		public string ActionCodeName { get; }
 
 		/// <summary>
 		/// The collection of parameters specified for the action, indexed by their key.
@@ -48,9 +74,6 @@ namespace Grammophone.Domos.Web.Models
 		/// </exception>
 		public IReadOnlyDictionary<string, Logic.ParameterSpecification> GetParameterSpecifications()
 		{
-			if (this.ActionCodeName == null)
-				throw new ApplicationException($"The {nameof(ActionCodeName)} property is not set.");
-
 			return GetParameterSpecifications(this.ActionCodeName);
 		}
 

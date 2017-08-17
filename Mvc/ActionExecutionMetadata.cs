@@ -26,6 +26,13 @@ namespace Grammophone.Domos.Web.Mvc
 			Func<object> modelAccessor)
 			: base(prototype, modelAccessor)
 		{
+			if (prototype == null) throw new ArgumentNullException(nameof(prototype));
+			if (modelAccessor == null)
+				throw new ArgumentNullException(
+					nameof(modelAccessor),
+					"Metadata can only be extracted if a concrete model exists with ActionCodeName set. " +
+					"Use [Try]UpdateModelXXX methods on already created instances.");
+
 			var model = (Models.ActionExecutionModel)modelAccessor();
 
 			var parameterSpecifications = model.GetParameterSpecifications();

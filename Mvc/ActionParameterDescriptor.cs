@@ -88,7 +88,14 @@ namespace Grammophone.Domos.Web.Mvc
 		{
 			if (component is Models.ActionExecutionModel statePathExecutionModel)
 			{
-				return statePathExecutionModel.Parameters[this.ParameterSpecification.Key];
+				if (statePathExecutionModel.Parameters.TryGetValue(this.ParameterSpecification.Key, out object value))
+				{
+					return value;
+				}
+				else
+				{
+					return this.ParameterSpecification.GetDefaultValue();
+				}
 			}
 			else
 			{
