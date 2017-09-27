@@ -13,7 +13,8 @@ namespace Grammophone.Domos.Web.Mvc
 {
 	/// <summary>
 	/// Handles errors of AJAX calls and transforms the response into
-	/// a <see cref="UserErrorModel"/> JSON respone if the exception wasa <see cref="UserException"/>.
+	/// a <see cref="UserErrorModel"/> JSON respone if the exception was a <see cref="UserException"/>.
+	/// or a descendant of <see cref="AccessDeniedException"/> or of <see cref="IntegrityViolationException"/>.
 	/// </summary>
 	/// <remarks>
 	/// The filter determines whether this is an AJAX request by examining if
