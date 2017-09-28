@@ -37,10 +37,6 @@ namespace Grammophone.Domos.Web.Http
 				{
 					statusCode = HttpStatusCode.Forbidden;
 					userMessage = ErrorMessages.ACCESS_DENIED;
-
-					var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-
-					telemetry.TrackException(exception);
 				}
 				else if (exception is UniqueConstraintViolationException)
 				{
@@ -72,10 +68,6 @@ namespace Grammophone.Domos.Web.Http
 			}
 			else
 			{
-				var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-
-				telemetry.TrackException(exception);
-
 				base.OnException(actionExecutedContext);
 			}
 		}
