@@ -142,16 +142,15 @@ namespace Grammophone.Domos.Web.Mvc
 
 			TField propertyValue = modelPropertyExpression.Compile().Invoke(viewData.Model);
 
-			return htmlHelper.Partial(
-				partialViewName,
-				propertyValue,
-				new ViewDataDictionary<TField>
+			var partialViewData = new ViewDataDictionary(viewData)
+			{
+				TemplateInfo = new TemplateInfo
 				{
-					TemplateInfo = new TemplateInfo
-					{
-						HtmlFieldPrefix = fullPropertyName,
-					}
-				});
+					HtmlFieldPrefix = fullPropertyName,
+				}
+			};
+
+			return htmlHelper.Partial(partialViewName, propertyValue, partialViewData);
 		}
 	}
 }
