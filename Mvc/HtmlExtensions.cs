@@ -14,6 +14,8 @@ namespace Grammophone.Domos.Web.Mvc
 	/// </summary>
 	public static class HtmlExtensions
 	{
+		#region Public methods
+
 		/// <summary>
 		/// Output an unescaped fragment when a boolean value is true.
 		/// </summary>
@@ -152,5 +154,99 @@ namespace Grammophone.Domos.Web.Mvc
 
 			return htmlHelper.Partial(partialViewName, propertyValue, partialViewData);
 		}
+
+		/// <summary>
+		/// Get the description for a property of the model of a view, if any.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the model.</typeparam>
+		/// <typeparam name="TField">The type of the property within the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="modelPropertyExpression">The expression specifying the property inside the model.</param>
+		/// <returns>Returns the MVC string containing the plain text of the description, if found, else returns empty content.</returns>
+		public static MvcHtmlString DescriptionFor<TModel, TField>(
+			this HtmlHelper<TModel> htmlHelper,
+			Expression<Func<TModel, TField>> modelPropertyExpression)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
+
+			var metadata = ModelMetadata.FromLambdaExpression(modelPropertyExpression, htmlHelper.ViewData);
+
+			return GetDescriptionContent(metadata);
+		}
+
+		/// <summary>
+		/// Get the description for the model of the view, if any.
+		/// </summary>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
+		public static MvcHtmlString DescriptionForModel(this HtmlHelper htmlHelper)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+
+			var metadata = htmlHelper.ViewData.ModelMetadata;
+
+			return GetDescriptionContent(metadata);
+		}
+
+		/// <summary>
+		/// Get the prompt for a property of the model of a view, if any.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the model.</typeparam>
+		/// <typeparam name="TField">The type of the property within the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="modelPropertyExpression">The expression specifying the property inside the model.</param>
+		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
+		public static MvcHtmlString PromptFor<TModel, TField>(
+			this HtmlHelper<TModel> htmlHelper,
+			Expression<Func<TModel, TField>> modelPropertyExpression)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
+
+			var metadata = ModelMetadata.FromLambdaExpression(modelPropertyExpression, htmlHelper.ViewData);
+
+			return GetPromptContent(metadata);
+		}
+
+		/// <summary>
+		/// Get the prompt for the model of the view, if any.
+		/// </summary>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
+		public static MvcHtmlString PromptForModel(this HtmlHelper htmlHelper)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+
+			var metadata = htmlHelper.ViewData.ModelMetadata;
+
+			return GetPromptContent(metadata);
+		}
+
+		#endregion
+
+		#region Private methods
+
+		private static MvcHtmlString GetDescriptionContent(ModelMetadata metadata)
+		{
+			string description = metadata?.Description;
+
+			if (description != null)
+				return new MvcHtmlString(description);
+			else
+				return MvcHtmlString.Empty;
+		}
+
+		private static MvcHtmlString GetPromptContent(ModelMetadata metadata)
+		{
+			string prompt = metadata?.Watermark;
+
+			if (prompt != null)
+				return new MvcHtmlString(prompt);
+			else
+				return MvcHtmlString.Empty;
+		}
+
+		#endregion
 	}
 }
