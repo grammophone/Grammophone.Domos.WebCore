@@ -369,6 +369,21 @@ namespace Grammophone.Domos.Web.Mvc
 			UpdateModelExcluding(prefix, model, excludedPropertiesSelectors);
 		}
 
+		/// <summary>
+		/// Get the unvalidated string of a model property posted in Request.
+		/// </summary>
+		/// <typeparam name="M">The type of the model</typeparam>
+		/// <param name="propertySelector">An expression to select the property from the model.</param>
+		/// <returns>Returns the string in the request for the property.</returns>
+		protected string GetUnvalidatedPropertyFromRequest<M>(Expression<Func<M, object>> propertySelector)
+		{
+			if (propertySelector == null) throw new ArgumentNullException(nameof(propertySelector));
+
+			string requestKey = GenericExpressionHelper.GetExpressionText(propertySelector);
+
+			return this.Request.Unvalidated[requestKey];
+		}
+
 		#endregion
 
 		#region Private methods
