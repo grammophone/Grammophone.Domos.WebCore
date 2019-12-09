@@ -32,7 +32,7 @@ namespace Grammophone.Domos.Web.Mvc
 			var controllerContext = this.ControllerContext;
 
 			// First find the ViewEngine for this view.
-			ViewEngineResult viewEngineResult = null;
+			ViewEngineResult viewEngineResult;
 
 			if (partial)
 				viewEngineResult = ViewEngines.Engines.FindPartialView(controllerContext, viewPath);
@@ -299,7 +299,7 @@ namespace Grammophone.Domos.Web.Mvc
 
 			string prefix = GenericExpressionHelper.GetExpressionText(modelSelector);
 
-			return TryUpdateModelExcluding(model, excludedPropertiesSelectors);
+			return TryUpdateModelExcluding(prefix, model, excludedPropertiesSelectors);
 		}
 
 		/// <summary>
