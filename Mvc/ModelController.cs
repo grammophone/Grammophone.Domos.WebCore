@@ -151,7 +151,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <typeparam name="M">The type of the model.</typeparam>
 		/// <typeparam name="VM">The type of object which contains the model.</typeparam>
-		/// <param name="modelSelector">The expression which extracts the model from which container.</param>
+		/// <param name="modelSelector">The expression to extract the model the view model of type <typeparamref name="VM"/>.</param>
 		/// <param name="model">The model to update.</param>
 		/// <param name="includedPropertiesSelectors">Array of expressions of included properties.</param>
 		/// <returns>Returns true when the included model properties were valid.</returns>
@@ -218,7 +218,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <typeparam name="M">The type of the model.</typeparam>
 		/// <typeparam name="VM">The type of object which contains the model.</typeparam>
-		/// <param name="modelSelector">The expression which extracts the model from which container.</param>
+		/// <param name="modelSelector">The expression to extract the model the view model of type <typeparamref name="VM"/>.</param>
 		/// <param name="model">The model to update.</param>
 		/// <param name="includedPropertiesSelectors">Array of expressions of included properties.</param>
 		/// <exception cref="InvalidOperationException">Thrown when the included properties are not valid.</exception>
@@ -285,7 +285,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <typeparam name="M">The type of the model.</typeparam>
 		/// <typeparam name="VM">The type of object which contains the model.</typeparam>
-		/// <param name="modelSelector">The expression which extracts the model from which container.</param>
+		/// <param name="modelSelector">The expression to extract the model the view model of type <typeparamref name="VM"/>.</param>
 		/// <param name="model">The model to update.</param>
 		/// <param name="excludedPropertiesSelectors">Array of expressions of excluded properties.</param>
 		/// <returns>Returns true when the included model properties were valid.</returns>
@@ -352,7 +352,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <typeparam name="M">The type of the model.</typeparam>
 		/// <typeparam name="VM">The type of object which contains the model.</typeparam>
-		/// <param name="modelSelector">The expression which extracts the model from which container.</param>
+		/// <param name="modelSelector">The expression to extract the model the view model of type <typeparamref name="VM"/>.</param>
 		/// <param name="model">The model to update.</param>
 		/// <param name="excludedPropertiesSelectors">Array of expressions of excluded properties.</param>
 		/// <exception cref="InvalidOperationException">Thrown when the included properties are not valid.</exception>
