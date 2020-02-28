@@ -11,7 +11,7 @@ namespace Grammophone.Domos.Web.Models
 	/// <summary>
 	/// Non-specialized interface for the execution of a state path over a stateful object.
 	/// </summary>
-	public interface IStatefulExecutionModel
+	public interface IStatefulObjectExecutionModel
 	{
 		/// <summary>
 		/// The stateful object.
@@ -36,7 +36,7 @@ namespace Grammophone.Domos.Web.Models
 	/// <typeparam name="U">The type of the user, derived from <see cref="User"/>.</typeparam>
 	/// <typeparam name="ST">The type of state transitions, derived from <see cref="StateTransition{U}"/>.</typeparam>
 	/// <typeparam name="SO">The type of stateful object, implementing <see cref="IStateful{U, ST}"/>.</typeparam>
-	public interface IStatefulExecutionModel<U, out ST, SO>
+	public interface IStatefulObjectExecutionModel<U, out ST, out SO>
 		where U : User
 		where ST : StateTransition<U>
 		where SO : IStateful

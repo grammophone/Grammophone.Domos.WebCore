@@ -92,16 +92,16 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <typeparam name="WM">The type of the workflow manager for the stateful object.</typeparam>
 		/// <param name="workflowManager">he workflow manager for the stateful object.</param>
 		/// <returns>Returns the model requested. Check ModelState for any validation errors.</returns>
-		protected async Task<StatefulExecutionModel<U, ST, SO>> BindStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager)
+		protected async Task<StatefulObjectExecutionModel<U, ST, SO>> BindStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager)
 			where ST : StateTransition<U>
 			where SO : IStateful<U, ST>
 			where WM : IWorkflowManager<U, ST, SO>
 		{
 			if (workflowManager == null) throw new ArgumentNullException(nameof(workflowManager));
 
-			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, this.ValueProvider, nameof(StatefulExecutionModel<SO>.ExecutionModel));
+			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, this.ValueProvider, nameof(StatefulObjectExecutionModel<SO>.ExecutionModel));
 
-			TryUpdateModelIncluding<StatePathExecutionModel, StatefulExecutionModel<SO>>(m => m.ExecutionModel, executionModel);
+			TryUpdateModelIncluding<StatePathExecutionModel, StatefulObjectExecutionModel<SO>>(m => m.ExecutionModel, executionModel);
 
 			var stateful = await workflowManager.GetStatefulObjectAsync(executionModel.StatefulID);
 
@@ -109,7 +109,7 @@ namespace Grammophone.Domos.Web.Mvc
 
 			var stateTransitions = workflowManager.GetStateTransitions(stateful);
 
-			return new StatefulExecutionModel<U, ST, SO>(stateful, statePath, executionModel, stateTransitions);
+			return new StatefulObjectExecutionModel<U, ST, SO>(stateful, statePath, executionModel, stateTransitions);
 		}
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="statefulID">The ID of the stateful object.</param>
 		/// <param name="statePathCodeName">The code name of the state path to be executed on the stateful object.</param>
 		/// <returns>Returns the model requested.</returns>
-		protected async Task<StatefulExecutionModel<U, ST, SO>> CreateStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager, long statefulID, string statePathCodeName)
+		protected async Task<StatefulObjectExecutionModel<U, ST, SO>> CreateStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager, long statefulID, string statePathCodeName)
 			where ST : StateTransition<U>
 			where SO : IStateful<U, ST>
 			where WM : IWorkflowManager<U, ST, SO>
@@ -134,7 +134,7 @@ namespace Grammophone.Domos.Web.Mvc
 
 			var statePath = await workflowManager.GetStatePathAsync(statePathCodeName);
 
-			return new StatefulExecutionModel<U, ST, SO>(stateful, statePath, workflowManager);
+			return new StatefulObjectExecutionModel<U, ST, SO>(stateful, statePath, workflowManager);
 		}
 
 		#endregion

@@ -13,7 +13,7 @@ namespace Grammophone.Domos.Web.Models
 	/// Model for executing a state path against a stateful object.
 	/// </summary>
 	/// <typeparam name="SO">The type of the stateful object.</typeparam>
-	public class StatefulExecutionModel<SO> : IStatefulExecutionModel
+	public class StatefulObjectExecutionModel<SO> : IStatefulObjectExecutionModel
 		where SO : IStateful
 	{
 		#region Construction
@@ -23,16 +23,16 @@ namespace Grammophone.Domos.Web.Models
 		/// </summary>
 		/// <param name="stateful">The stateful object to execute the path on.</param>
 		/// <param name="statePath">The state path to execute.</param>
-		/// <param name="execution">The path execution model.</param>
-		public StatefulExecutionModel(SO stateful, StatePath statePath, StatePathExecutionModel execution)
+		/// <param name="executionMode">The path execution model.</param>
+		public StatefulObjectExecutionModel(SO stateful, StatePath statePath, StatePathExecutionModel executionMode)
 		{
 			if (stateful == null) throw new ArgumentNullException(nameof(stateful));
 			if (statePath == null) throw new ArgumentNullException(nameof(statePath));
-			if (execution == null) throw new ArgumentNullException(nameof(execution));
+			if (executionMode == null) throw new ArgumentNullException(nameof(executionMode));
 
 			this.Stateful = stateful;
 			this.StatePath = statePath;
-			this.ExecutionModel = execution;
+			this.ExecutionModel = executionMode;
 		}
 
 		#endregion
@@ -59,7 +59,7 @@ namespace Grammophone.Domos.Web.Models
 
 		#region Explicit implementation of remaining IStatefulExecutionModel members
 
-		IStateful IStatefulExecutionModel.Stateful => this.Stateful;
+		IStateful IStatefulObjectExecutionModel.Stateful => this.Stateful;
 
 		#endregion
 	}
@@ -70,7 +70,7 @@ namespace Grammophone.Domos.Web.Models
 	/// <typeparam name="U">The type of the user, derived from <see cref="User"/>.</typeparam>
 	/// <typeparam name="ST">The type of state transitions, derived from <see cref="StateTransition{U}"/>.</typeparam>
 	/// <typeparam name="SO">The type of stateful object, implementing <see cref="IStateful{U, ST}"/>.</typeparam>
-	public class StatefulExecutionModel<U, ST, SO> : StatefulExecutionModel<SO>, IStatefulExecutionModel<U, ST, SO>
+	public class StatefulObjectExecutionModel<U, ST, SO> : StatefulObjectExecutionModel<SO>, IStatefulObjectExecutionModel<U, ST, SO>
 		where U : User
 		where ST : StateTransition<U>
 		where SO : IStateful<U, ST>
@@ -83,7 +83,7 @@ namespace Grammophone.Domos.Web.Models
 		/// <param name="stateful">The stateful object to execute the path on.</param>
 		/// <param name="statePath">The state path to execute.</param>
 		/// <param name="workflowManager">The workflow manager for the <paramref name="stateful"/> object.</param>
-		public StatefulExecutionModel(SO stateful, StatePath statePath, IWorkflowManager<U, ST, SO> workflowManager)
+		public StatefulObjectExecutionModel(SO stateful, StatePath statePath, IWorkflowManager<U, ST, SO> workflowManager)
 			: base(stateful, statePath, CreateStatePathExecution(stateful, statePath, workflowManager))
 		{
 			this.StateTransitions = workflowManager.GetStateTransitions(stateful);
@@ -96,7 +96,7 @@ namespace Grammophone.Domos.Web.Models
 		/// <param name="statePath">The state path to execute.</param>
 		/// <param name="executionModel">The path execution model.</param>
 		/// <param name="stateTransitions">The set of state transitions of the <paramref name="stateful"/> object.</param>
-		public StatefulExecutionModel(SO stateful, StatePath statePath, StatePathExecutionModel<U, ST, SO> executionModel, IQueryable<ST> stateTransitions)
+		public StatefulObjectExecutionModel(SO stateful, StatePath statePath, StatePathExecutionModel<U, ST, SO> executionModel, IQueryable<ST> stateTransitions)
 			: base(stateful, statePath, executionModel)
 		{
 			if (stateTransitions == null) throw new ArgumentNullException(nameof(stateTransitions));
@@ -109,7 +109,7 @@ namespace Grammophone.Domos.Web.Models
 		#region Public properties
 
 		/// <summary>
-		/// The set of state transitions of the <see cref="StatefulExecutionModel{SO}.Stateful"/> object.
+		/// The set of state transitions of the <see cref="StatefulObjectExecutionModel{SO}.Stateful"/> object.
 		/// </summary>
 		public IQueryable<ST> StateTransitions { get; }
 
