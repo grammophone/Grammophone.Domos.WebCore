@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="Http\ApplicationInsightsApiExceptionFilter.cs" />
     <Compile Include="Models\ActionExecutionModel.cs" />
+    <Compile Include="Models\IStatefulExecutionModel.cs" />
     <Compile Include="Models\StatefulExecutionModel.cs" />
     <Compile Include="Models\StatePathExecutionModel.cs" />
     <Compile Include="Mvc\ActionExecutionMetadata.cs" />

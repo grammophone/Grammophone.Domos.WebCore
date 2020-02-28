@@ -13,9 +13,11 @@ namespace Grammophone.Domos.Web.Models
 	/// Model for executing a state path against a stateful object.
 	/// </summary>
 	/// <typeparam name="SO">The type of the stateful object.</typeparam>
-	public class StatefulExecutionModel<SO>
+	public class StatefulExecutionModel<SO> : IStatefulExecutionModel
 		where SO : IStateful
 	{
+		#region Construction
+
 		/// <summary>
 		/// Create.
 		/// </summary>
@@ -30,8 +32,12 @@ namespace Grammophone.Domos.Web.Models
 
 			this.Stateful = stateful;
 			this.StatePath = statePath;
-			this.Execution = execution;
+			this.ExecutionModel = execution;
 		}
+
+		#endregion
+
+		#region Public properties
 
 		/// <summary>
 		/// The stateful object.
@@ -47,7 +53,15 @@ namespace Grammophone.Domos.Web.Models
 		/// Contains the parameters of the execution of the <see cref="StatePath"/>
 		/// against the <see cref="Stateful"/>.
 		/// </summary>
-		public StatePathExecutionModel Execution { get; }
+		public StatePathExecutionModel ExecutionModel { get; }
+
+		#endregion
+
+		#region Explicit implementation of remaining IStatefulExecutionModel members
+
+		IStateful IStatefulExecutionModel.Stateful => this.Stateful;
+
+		#endregion
 	}
 
 	/// <summary>
@@ -56,11 +70,13 @@ namespace Grammophone.Domos.Web.Models
 	/// <typeparam name="U">The type of the user, derived from <see cref="User"/>.</typeparam>
 	/// <typeparam name="ST">The type of state transitions, derived from <see cref="StateTransition{U}"/>.</typeparam>
 	/// <typeparam name="SO">The type of stateful object, implementing <see cref="IStateful{U, ST}"/>.</typeparam>
-	public class StatefulExecutionModel<U, ST, SO> : StatefulExecutionModel<SO>
+	public class StatefulExecutionModel<U, ST, SO> : StatefulExecutionModel<SO>, IStatefulExecutionModel<U, ST, SO>
 		where U : User
 		where ST : StateTransition<U>
 		where SO : IStateful<U, ST>
 	{
+		#region Construction
+
 		/// <summary>
 		/// Create.
 		/// </summary>
@@ -70,7 +86,36 @@ namespace Grammophone.Domos.Web.Models
 		public StatefulExecutionModel(SO stateful, StatePath statePath, IWorkflowManager<U, ST, SO> workflowManager)
 			: base(stateful, statePath, CreateStatePathExecution(stateful, statePath, workflowManager))
 		{
+			this.StateTransitions = workflowManager.GetStateTransitions(stateful);
 		}
+
+		/// <summary>
+		/// Create.
+		/// </summary>
+		/// <param name="stateful">The stateful object to execute the path on.</param>
+		/// <param name="statePath">The state path to execute.</param>
+		/// <param name="executionModel">The path execution model.</param>
+		/// <param name="stateTransitions">The set of state transitions of the <paramref name="stateful"/> object.</param>
+		public StatefulExecutionModel(SO stateful, StatePath statePath, StatePathExecutionModel<U, ST, SO> executionModel, IQueryable<ST> stateTransitions)
+			: base(stateful, statePath, executionModel)
+		{
+			if (stateTransitions == null) throw new ArgumentNullException(nameof(stateTransitions));
+
+			this.StateTransitions = stateTransitions;
+		}
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// The set of state transitions of the <see cref="StatefulExecutionModel{SO}.Stateful"/> object.
+		/// </summary>
+		public IQueryable<ST> StateTransitions { get; }
+
+		#endregion
+
+		#region Private methods
 
 		private static StatePathExecutionModel CreateStatePathExecution(SO stateful, StatePath statePath, IWorkflowManager<U, ST, SO> workflowManager)
 		{
@@ -83,5 +128,7 @@ namespace Grammophone.Domos.Web.Models
 				StatefulID = stateful.ID
 			};
 		}
+
+		#endregion
 	}
 }

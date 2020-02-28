@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Grammophone.Domos.DataAccess;
 using Grammophone.Domos.Domain;
+using Grammophone.Domos.Domain.Workflow;
 using Grammophone.Domos.Logic;
+using Grammophone.Domos.Web.Models;
 
 namespace Grammophone.Domos.Web.Mvc
 {
@@ -79,6 +81,60 @@ namespace Grammophone.Domos.Web.Mvc
 				logicSession.Dispose();
 				logicSession = null;
 			}
+		}
+
+		/// <summary>
+		/// Using the controller's value provider, Bind a model for executing a path on a stateful object.
+		/// Any validation errors are capured in ModelState.
+		/// </summary>
+		/// <typeparam name="ST">The type of state transitions of the stateful object.</typeparam>
+		/// <typeparam name="SO">The type of the stateful object.</typeparam>
+		/// <typeparam name="WM">The type of the workflow manager for the stateful object.</typeparam>
+		/// <param name="workflowManager">he workflow manager for the stateful object.</param>
+		/// <returns>Returns the model requested. Check ModelState for any validation errors.</returns>
+		protected async Task<StatefulExecutionModel<U, ST, SO>> BindStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager)
+			where ST : StateTransition<U>
+			where SO : IStateful<U, ST>
+			where WM : IWorkflowManager<U, ST, SO>
+		{
+			if (workflowManager == null) throw new ArgumentNullException(nameof(workflowManager));
+
+			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, this.ValueProvider, nameof(StatefulExecutionModel<SO>.ExecutionModel));
+
+			TryUpdateModelIncluding<StatePathExecutionModel, StatefulExecutionModel<SO>>(m => m.ExecutionModel, executionModel);
+
+			var stateful = await workflowManager.GetStatefulObjectAsync(executionModel.StatefulID);
+
+			var statePath = await workflowManager.GetStatePathAsync(executionModel.ActionCodeName);
+
+			var stateTransitions = workflowManager.GetStateTransitions(stateful);
+
+			return new StatefulExecutionModel<U, ST, SO>(stateful, statePath, executionModel, stateTransitions);
+		}
+
+		/// <summary>
+		/// Create a model for executing a state path on a stateful object.
+		/// </summary>
+		/// <typeparam name="ST">The type of state transitions of the stateful object.</typeparam>
+		/// <typeparam name="SO">The type of the stateful object.</typeparam>
+		/// <typeparam name="WM">The type of the workflow manager for the stateful object.</typeparam>
+		/// <param name="workflowManager">he workflow manager for the stateful object.</param>
+		/// <param name="statefulID">The ID of the stateful object.</param>
+		/// <param name="statePathCodeName">The code name of the state path to be executed on the stateful object.</param>
+		/// <returns>Returns the model requested.</returns>
+		protected async Task<StatefulExecutionModel<U, ST, SO>> CreateStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager, long statefulID, string statePathCodeName)
+			where ST : StateTransition<U>
+			where SO : IStateful<U, ST>
+			where WM : IWorkflowManager<U, ST, SO>
+		{
+			if (workflowManager == null) throw new ArgumentNullException(nameof(workflowManager));
+			if (statePathCodeName == null) throw new ArgumentNullException(nameof(statePathCodeName));
+
+			var stateful = await workflowManager.GetStatefulObjectAsync(statefulID);
+
+			var statePath = await workflowManager.GetStatePathAsync(statePathCodeName);
+
+			return new StatefulExecutionModel<U, ST, SO>(stateful, statePath, workflowManager);
 		}
 
 		#endregion
