@@ -184,7 +184,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="statefulID">The ID of the stateful object.</param>
 		/// <param name="statePathID">The ID of the state path to be executed on the stateful object.</param>
 		/// <returns>Returns the model requested.</returns>
-		protected async Task<StatefulObjectExecutionModel<U, ST, SO>> CreateStatefulExecutionModelAsync<ST, SO, WM>(WM workflowManager, long statefulID, long statePathID)
+		protected async Task<StatefulObjectExecutionModel<U, ST, SO>> CreateStatefulObjectExecutionModelAsync<ST, SO, WM>(WM workflowManager, long statefulID, long statePathID)
 			where ST : StateTransition<U>
 			where SO : IStateful<U, ST>
 			where WM : IWorkflowManager<U, ST, SO>
