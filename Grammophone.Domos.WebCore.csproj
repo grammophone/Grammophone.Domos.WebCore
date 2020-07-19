@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>{0F38D9D5-2AF7-4EDD-82EA-65859D485333}</ProjectGuid>
+    <ProjectGuid>{5c3036b1-d8f0-4611-9613-26d96480bf91}</ProjectGuid>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyTitle>Grammophone.Domos.Web</AssemblyTitle>
-    <Product>Grammophone.Domos.Web</Product>
-    <Copyright>Copyright ©  2016</Copyright>
+    <AssemblyTitle>Grammophone.Domos.WebCore</AssemblyTitle>
+    <Product>Grammophone.Domos.WebCore</Product>
+    <Copyright>Copyright © 2020</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\Grammophone.Domos.Web.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\Grammophone.Domos.WebCore.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
