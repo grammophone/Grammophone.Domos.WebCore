@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// Catches <see cref="ActionException"/> and executes
 	/// the <see cref="ActionException.TargetActionResult"/>.
 	/// </summary>
-	public class ActionExceptionFilterAttribute : FilterAttribute, IExceptionFilter
+	public class ActionExceptionFilterAttribute : Attribute, IExceptionFilter
 	{
 		/// <summary>
 		/// Test whether the exception thrown is <see cref="ActionException"/>

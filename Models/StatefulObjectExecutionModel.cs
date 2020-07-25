@@ -7,7 +7,7 @@ using Grammophone.Domos.Domain;
 using Grammophone.Domos.Domain.Workflow;
 using Grammophone.Domos.Logic;
 
-namespace Grammophone.Domos.Web.Models
+namespace Grammophone.Domos.WebCore.Models
 {
 	/// <summary>
 	/// Model for executing a state path against a stateful object.

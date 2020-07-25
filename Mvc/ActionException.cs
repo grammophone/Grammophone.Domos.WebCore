@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// An exception to force a redirection or other action,
@@ -20,7 +20,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <param name="targetActionResult">The action to be taken.</param>
 		/// <param name="innerException">Optional exception that caused the detour.</param>
-		public ActionException(ActionResult targetActionResult, Exception innerException = null)
+		public ActionException(IActionResult targetActionResult, Exception innerException = null)
 			: base("Exceptional controller action taken.", innerException)
 		{
 			if (targetActionResult == null) throw new ArgumentNullException(nameof(targetActionResult));
@@ -38,6 +38,6 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <summary>
 		/// The target action to be taken.
 		/// </summary>
-		public ActionResult TargetActionResult { get; }
+		public IActionResult TargetActionResult { get; }
 	}
 }

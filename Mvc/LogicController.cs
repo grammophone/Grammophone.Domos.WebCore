@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Grammophone.Domos.DataAccess;
 using Grammophone.Domos.Domain;
 using Grammophone.Domos.Domain.Workflow;
 using Grammophone.Domos.Logic;
-using Grammophone.Domos.Web.Models;
+using Grammophone.Domos.WebCore.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// Base for controllers associated with a Domos logic session.
@@ -22,7 +24,7 @@ namespace Grammophone.Domos.Web.Mvc
 	/// <remarks>
 	/// Uses the authentication environment to determine the logged-in user.
 	/// </remarks>
-	public abstract class LogicController<U, D, S> : ModelController
+	public abstract class LogicController<U, D, S> : Controller
 		where U : User
 		where D : IUsersDomainContainer<U>
 		where S : LogicSession<U, D>, new()
@@ -101,7 +103,9 @@ namespace Grammophone.Domos.Web.Mvc
 		{
 			if (workflowManager == null) throw new ArgumentNullException(nameof(workflowManager));
 
-			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, this.ValueProvider, nameof(StatefulObjectExecutionModel<SO>.ExecutionModel));
+			var valueProvider = await CompositeValueProvider.CreateAsync(this.ControllerContext);
+
+			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, valueProvider, nameof(StatefulObjectExecutionModel<SO>.ExecutionModel));
 
 			string executionModelPrefix;
 
@@ -110,7 +114,7 @@ namespace Grammophone.Domos.Web.Mvc
 			else
 				executionModelPrefix = nameof(StatefulObjectExecutionModel<SO>.ExecutionModel);
 
-			TryUpdateModelIncluding(executionModelPrefix, executionModel);
+			await TryUpdateModelAsync(executionModel, executionModelPrefix);
 
 			var stateful = await workflowManager.GetStatefulObjectAsync(executionModel.StatefulID);
 
@@ -196,6 +200,27 @@ namespace Grammophone.Domos.Web.Mvc
 			var statePath = await workflowManager.GetStatePathAsync(statePathID);
 
 			return new StatefulObjectExecutionModel<U, ST, SO>(stateful, statePath, workflowManager);
+		}
+
+		/// <summary>
+		/// Get the ID of the currently logged-in user or null if the user is anonymous.
+		/// </summary>
+		protected long? GetCurrentUserID()
+		{
+			if (this.User == null) return null;
+
+			var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier);
+
+			if (userIdClaim == null) return null;
+
+			if (long.TryParse(userIdClaim.Value, out long userID))
+			{
+				return userID;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		#endregion

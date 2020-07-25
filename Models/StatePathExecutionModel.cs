@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Grammophone.Domos.Domain;
 using Grammophone.Domos.Domain.Workflow;
 using Grammophone.Domos.Logic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Grammophone.Domos.Web.Models
+namespace Grammophone.Domos.WebCore.Models
 {
 	/// <summary>
 	/// Model for the execution of a state path

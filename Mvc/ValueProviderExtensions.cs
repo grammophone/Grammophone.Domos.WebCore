@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// Extension methods for value providers.

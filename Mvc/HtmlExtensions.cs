@@ -4,10 +4,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using System.Web.Mvc.Html;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// Extensions for <see cref="HtmlHelper"/>.
@@ -22,18 +25,18 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="value">The value to test.</param>
 		/// <param name="fragment">The HTML fragment.</param>
-		public static MvcHtmlString When(this HtmlHelper htmlHelper, bool value, string fragment)
+		public static IHtmlContent When(this HtmlHelper htmlHelper, bool value, string fragment)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException("htmlHelper");
 			if (fragment == null) throw new ArgumentNullException("fragment");
 
 			if (value)
 			{
-				return new MvcHtmlString(fragment);
+				return new HtmlString(fragment);
 			}
 			else
 			{
-				return MvcHtmlString.Empty;
+				return HtmlString.Empty;
 			}
 		}
 
@@ -56,7 +59,14 @@ namespace Grammophone.Domos.Web.Mvc
 
 			string fieldPath = htmlHelper.NameFor(fieldSelector).ToString();
 
-			return htmlHelper.ViewData.ModelState.IsValidField(fieldPath);
+			var modelState = htmlHelper.ViewData.ModelState;
+
+			if (modelState.TryGetValue(fieldPath, out ModelStateEntry modelStateEntry))
+			{
+				return modelStateEntry.ValidationState == ModelValidationState.Valid;
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -69,7 +79,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="htmlHelper">The html helper.</param>
 		/// <param name="fieldSelector">An expression specifying the field.</param>
 		/// <param name="fragment">The HTML fragment to output when the field is valid.</param>
-		public static MvcHtmlString WhenValid<TModel, TField>(
+		public static IHtmlContent WhenValid<TModel, TField>(
 			this HtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> fieldSelector,
 			string fragment)
@@ -89,7 +99,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="htmlHelper">The html helper.</param>
 		/// <param name="fieldSelector">An expression specifying the field.</param>
 		/// <param name="fragment">The HTML fragment to output when the field is not valid.</param>
-		public static MvcHtmlString WhenNotValid<TModel, TField>(
+		public static IHtmlContent WhenNotValid<TModel, TField>(
 			this HtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> fieldSelector,
 			string fragment)
@@ -107,7 +117,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <typeparam name="TField">The type of the model's field.</typeparam>
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="modelPropertyExpression">Expression defining the model's field.</param>
-		public static MvcHtmlString ValidationClassFor<TModel, TField>(
+		public static IHtmlContent ValidationClassFor<TModel, TField>(
 			this HtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
@@ -127,7 +137,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// This method takes care of the model prefix which the partial view must include
 		/// in its input field expressions.
 		/// </remarks>
-		public static MvcHtmlString PartialFor<TModel, TField>(
+		public static IHtmlContent PartialFor<TModel, TField>(
 			this HtmlHelper<TModel> htmlHelper,
 			string partialViewName,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
@@ -144,13 +154,9 @@ namespace Grammophone.Domos.Web.Mvc
 
 			TField propertyValue = modelPropertyExpression.Compile().Invoke(viewData.Model);
 
-			var partialViewData = new ViewDataDictionary(viewData)
-			{
-				TemplateInfo = new TemplateInfo
-				{
-					HtmlFieldPrefix = fullPropertyName,
-				}
-			};
+			var partialViewData = new ViewDataDictionary(viewData);
+
+			partialViewData.TemplateInfo.HtmlFieldPrefix = fullPropertyName;
 
 			return htmlHelper.Partial(partialViewName, propertyValue, partialViewData);
 		}
@@ -163,14 +169,14 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="modelPropertyExpression">The expression specifying the property inside the model.</param>
 		/// <returns>Returns the MVC string containing the plain text of the description, if found, else returns empty content.</returns>
-		public static MvcHtmlString DescriptionFor<TModel, TField>(
+		public static IHtmlContent DescriptionFor<TModel, TField>(
 			this HtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
 
-			var metadata = ModelMetadata.FromLambdaExpression(modelPropertyExpression, htmlHelper.ViewData);
+			ModelMetadata metadata = GetPropertyMetadata(htmlHelper, modelPropertyExpression);
 
 			return GetDescriptionContent(metadata);
 		}
@@ -180,7 +186,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
-		public static MvcHtmlString DescriptionForModel(this HtmlHelper htmlHelper)
+		public static IHtmlContent DescriptionForModel(this HtmlHelper htmlHelper)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 
@@ -197,14 +203,14 @@ namespace Grammophone.Domos.Web.Mvc
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="modelPropertyExpression">The expression specifying the property inside the model.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
-		public static MvcHtmlString PromptFor<TModel, TField>(
+		public static IHtmlContent PromptFor<TModel, TField>(
 			this HtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
 
-			var metadata = ModelMetadata.FromLambdaExpression(modelPropertyExpression, htmlHelper.ViewData);
+			ModelMetadata metadata = GetPropertyMetadata(htmlHelper, modelPropertyExpression);
 
 			return GetPromptContent(metadata);
 		}
@@ -214,7 +220,7 @@ namespace Grammophone.Domos.Web.Mvc
 		/// </summary>
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
-		public static MvcHtmlString PromptForModel(this HtmlHelper htmlHelper)
+		public static IHtmlContent PromptForModel(this HtmlHelper htmlHelper)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 
@@ -227,24 +233,32 @@ namespace Grammophone.Domos.Web.Mvc
 
 		#region Private methods
 
-		private static MvcHtmlString GetDescriptionContent(ModelMetadata metadata)
+		private static IHtmlContent GetDescriptionContent(ModelMetadata metadata)
 		{
 			string description = metadata?.Description;
 
 			if (description != null)
-				return new MvcHtmlString(description);
+				return new HtmlString(description);
 			else
-				return MvcHtmlString.Empty;
+				return HtmlString.Empty;
 		}
 
-		private static MvcHtmlString GetPromptContent(ModelMetadata metadata)
+		private static IHtmlContent GetPromptContent(ModelMetadata metadata)
 		{
-			string prompt = metadata?.Watermark;
+			string prompt = metadata?.Placeholder;
 
 			if (prompt != null)
-				return new MvcHtmlString(prompt);
+				return new HtmlString(prompt);
 			else
-				return MvcHtmlString.Empty;
+				return HtmlString.Empty;
+		}
+
+		private static ModelMetadata GetPropertyMetadata<TModel, TField>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TField>> modelPropertyExpression)
+		{
+			string propertyName = ExpressionHelper.GetExpressionText(modelPropertyExpression);
+
+			var metadata = htmlHelper.ViewData.ModelMetadata.GetMetadataForProperty(typeof(TModel), propertyName);
+			return metadata;
 		}
 
 		#endregion

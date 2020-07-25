@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
-namespace Grammophone.Domos.Web
+namespace Grammophone.Domos.WebCore
 {
 	/// <summary>
 	/// Helper class to get the model names from geneereic lambda expressions.

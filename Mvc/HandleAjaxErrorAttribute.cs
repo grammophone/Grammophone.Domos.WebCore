@@ -4,12 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Grammophone.DataAccess;
 using Grammophone.Domos.Logic;
-using Grammophone.Domos.Web.Models;
+using Grammophone.Domos.WebCore.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// Handles errors of AJAX calls and transforms the response into
@@ -20,7 +21,7 @@ namespace Grammophone.Domos.Web.Mvc
 	/// The filter determines whether this is an AJAX request by examining if
 	/// there is a "X-Requested-With" header having value "XMLHttpRequest".
 	/// </remarks>
-	public class HandleAjaxErrorAttribute : FilterAttribute, IExceptionFilter
+	public class HandleAjaxErrorAttribute : Attribute, IExceptionFilter
 	{
 		/// <summary>
 		/// If the request is an AJAX one and the exception is of type <see cref="UserException"/>
@@ -52,7 +53,7 @@ namespace Grammophone.Domos.Web.Mvc
 
 					switch (exception)
 					{
-						case AccessDeniedException accessDeniedException:
+						case AccessDeniedException _:
 							statusCode = HttpStatusCode.Forbidden;
 							userMessage = ErrorMessages.ACCESS_DENIED;
 
@@ -61,12 +62,12 @@ namespace Grammophone.Domos.Web.Mvc
 							telemetry.TrackException(exception);
 							break;
 
-						case UniqueConstraintViolationException uniqueConstraintViolationException:
+						case UniqueConstraintViolationException _:
 							statusCode = HttpStatusCode.Conflict;
 							userMessage = ErrorMessages.UNIQUENESS_CONSTRAINT_VIOLATION;
 							break;
 
-						case ReferentialConstraintViolationException referentialConstraintViolationException:
+						case ReferentialConstraintViolationException _:
 							statusCode = HttpStatusCode.Conflict;
 							userMessage = ErrorMessages.RELATIONAL_CONSTRAINT_VIOLATION;
 							break;
@@ -86,12 +87,7 @@ namespace Grammophone.Domos.Web.Mvc
 
 				if (userErrorModel != null)
 				{
-					filterContext.Result = new JsonResult
-					{
-						Data = userErrorModel,
-						ContentEncoding = Encoding.UTF8,
-						JsonRequestBehavior = JsonRequestBehavior.AllowGet
-					};
+					filterContext.Result = new JsonResult(userErrorModel);
 
 					filterContext.HttpContext.Response.StatusCode = (int)statusCode;
 

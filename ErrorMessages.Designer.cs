@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Grammophone.Domos.Web {
+namespace Grammophone.Domos.WebCore {
     using System;
     
     

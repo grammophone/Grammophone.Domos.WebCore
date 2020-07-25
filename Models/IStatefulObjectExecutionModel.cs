@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Grammophone.Domos.Domain;
 using Grammophone.Domos.Domain.Workflow;
 
-namespace Grammophone.Domos.Web.Models
+namespace Grammophone.Domos.WebCore.Models
 {
 	/// <summary>
 	/// Non-specialized interface for the execution of a state path over a stateful object.

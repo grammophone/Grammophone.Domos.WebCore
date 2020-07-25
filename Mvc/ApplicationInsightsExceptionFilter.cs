@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Grammophone.DataAccess;
 using Grammophone.Domos.Logic;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Grammophone.Domos.Web.Mvc
+namespace Grammophone.Domos.WebCore.Mvc
 {
 	/// <summary>
 	/// MVC Filter attribute to record system exceptions to Applications Insights,
 	/// excluding exceptions targeted to the user.
 	/// </summary>
-	public class ApplicationInsightsExceptionFilter : FilterAttribute, IExceptionFilter
+	public class ApplicationInsightsExceptionFilter : Attribute, IExceptionFilter
 	{
 		/// <summary>
 		/// Records the system exceptions and does nothing for the rest.

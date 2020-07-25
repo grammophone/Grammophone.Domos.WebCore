@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Grammophone.Domos.Web.Models
+namespace Grammophone.Domos.WebCore.Models
 {
 	/// <summary>
 	/// Model for the execution of an action.
@@ -39,12 +39,12 @@ namespace Grammophone.Domos.Web.Models
 
 			var actionCodeNameResult = valueProvider.GetValue(actionCodeNameKey);
 
-			if (actionCodeNameResult == null || String.IsNullOrEmpty(actionCodeNameResult.AttemptedValue))
+			if (actionCodeNameResult == null || String.IsNullOrEmpty(actionCodeNameResult.FirstValue))
 			{
 				throw new ApplicationException($"The value provider does not contain an item under key '{actionCodeNameKey}'.");
 			}
 
-			this.ActionCodeName = actionCodeNameResult.AttemptedValue;
+			this.ActionCodeName = actionCodeNameResult.FirstValue;
 			this.Parameters = new Dictionary<string, object>();
 		}
 
