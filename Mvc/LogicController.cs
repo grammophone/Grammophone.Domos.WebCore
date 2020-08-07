@@ -28,27 +28,19 @@ namespace Grammophone.Domos.WebCore.Mvc
 	public abstract class LogicController<U, D, S> : Controller
 		where U : User
 		where D : IUsersDomainContainer<U>
-		where S : LogicSession<U, D>, new()
+		where S : LogicSession<U, D>
 	{
-		#region Private fields
-
-		private S logicSession;
-		
-		private readonly IUserContext userContext;
-
-		#endregion
-
 		#region Construction
 
 		/// <summary>
 		/// Create.
 		/// </summary>
-		/// <param name="userContext">The Domos environment user context.</param>
-		public LogicController(IUserContext userContext)
+		/// <param name="logicSession">The Domos logic session.</param>
+		public LogicController(S logicSession)
 		{
-			if (userContext == null) throw new ArgumentNullException(nameof(userContext));
+			if (logicSession == null) throw new ArgumentNullException(nameof(logicSession));
 
-			this.userContext = userContext;
+			this.LogicSession = logicSession;
 		}
 
 		#endregion
@@ -58,8 +50,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <summary>
 		/// The LifeAccount session associated with the controller.
 		/// </summary>
-		protected internal S LogicSession
-			=> logicSession ?? (logicSession = CreateLogicSession(userContext));
+		protected internal S LogicSession { get; }
 
 		/// <summary>
 		/// Creates a logic session for the controller.
@@ -70,38 +61,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 
 		#endregion
 
-		#region Public methods
-
-		/// <summary>
-		/// Closes the session.
-		/// </summary>
-		/// <param name="disposing">
-		/// true to release both managed and unmanaged resources;
-		/// false to release only unmanaged.
-		/// </param>
-		protected override void Dispose(bool disposing)
-		{
-			FlushSession();
-
-			base.Dispose(disposing);
-		}
-
-		#endregion
-
 		#region Protected methods
-
-		/// <summary>
-		/// Closes the session, of opened, forcing a new one to be opened 
-		/// if the <see cref="LogicSession"/> property is refernced again.
-		/// </summary>
-		protected virtual void FlushSession()
-		{
-			if (logicSession != null)
-			{
-				logicSession.Dispose();
-				logicSession = null;
-			}
-		}
 
 		/// <summary>
 		/// Using the controller's value provider, Bind a <see cref="IStatefulObjectExecutionModel"/> for executing a path on a stateful object.
