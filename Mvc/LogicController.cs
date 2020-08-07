@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Grammophone.Domos.DataAccess;
 using Grammophone.Domos.Domain;
 using Grammophone.Domos.Domain.Workflow;
+using Grammophone.Domos.Environment;
 using Grammophone.Domos.Logic;
 using Grammophone.Domos.WebCore.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,23 @@ namespace Grammophone.Domos.WebCore.Mvc
 		#region Private fields
 
 		private S logicSession;
+		
+		private readonly IUserContext userContext;
+
+		#endregion
+
+		#region Construction
+
+		/// <summary>
+		/// Create.
+		/// </summary>
+		/// <param name="userContext">The Domos environment user context.</param>
+		public LogicController(IUserContext userContext)
+		{
+			if (userContext == null) throw new ArgumentNullException(nameof(userContext));
+
+			this.userContext = userContext;
+		}
 
 		#endregion
 
@@ -41,15 +59,14 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// The LifeAccount session associated with the controller.
 		/// </summary>
 		protected internal S LogicSession
-			=> logicSession ?? (logicSession = CreateLogicSession());
+			=> logicSession ?? (logicSession = CreateLogicSession(userContext));
 
 		/// <summary>
 		/// Creates a logic session for the controller.
 		/// </summary>
-		protected virtual S CreateLogicSession()
-		{
-			return new S();
-		}
+		/// <param name="userContext">The Domos user context provided in the contruction of this controller.</param>
+		/// <returns>Returns a logic session of type <typeparamref name="S"/>.</returns>
+		protected abstract S CreateLogicSession(IUserContext userContext);
 
 		#endregion
 
