@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{5c3036b1-d8f0-4611-9613-26d96480bf91}</ProjectGuid>
-    <TargetFramework>net472</TargetFramework>
-    <AssemblyTitle>Grammophone.Domos.WebCore</AssemblyTitle>
+		<TargetFrameworks>net472;netcoreapp3.1;</TargetFrameworks>
+		<AssemblyTitle>Grammophone.Domos.WebCore</AssemblyTitle>
     <Product>Grammophone.Domos.WebCore</Product>
-    <Copyright>Copyright © 2020</Copyright>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\Grammophone.Domos.WebCore.xml</DocumentationFile>
+    <Copyright>Copyright © domos.tech 2020</Copyright>
+    <DocumentationFile>bin\$(Configuration)\\$(TargetFramework)\Grammophone.Domos.WebCore.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
