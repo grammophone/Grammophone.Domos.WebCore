@@ -25,7 +25,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="value">The value to test.</param>
 		/// <param name="fragment">The HTML fragment.</param>
-		public static IHtmlContent When(this HtmlHelper htmlHelper, bool value, string fragment)
+		public static IHtmlContent When(this IHtmlHelper htmlHelper, bool value, string fragment)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException("htmlHelper");
 			if (fragment == null) throw new ArgumentNullException("fragment");
@@ -51,7 +51,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="fieldSelector">An expression specifying the field.</param>
 		/// <returns>Returns whether the field is valid. If the field was not bound, it returns false.</returns>
 		public static bool IsValid<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> fieldSelector)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException("htmlHelper");
@@ -80,7 +80,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="fieldSelector">An expression specifying the field.</param>
 		/// <param name="fragment">The HTML fragment to output when the field is valid.</param>
 		public static IHtmlContent WhenValid<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> fieldSelector,
 			string fragment)
 		{
@@ -100,7 +100,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="fieldSelector">An expression specifying the field.</param>
 		/// <param name="fragment">The HTML fragment to output when the field is not valid.</param>
 		public static IHtmlContent WhenNotValid<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> fieldSelector,
 			string fragment)
 		{
@@ -118,7 +118,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="modelPropertyExpression">Expression defining the model's field.</param>
 		public static IHtmlContent ValidationClassFor<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
 			return htmlHelper.WhenNotValid(modelPropertyExpression, "has-error");
@@ -138,7 +138,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// in its input field expressions.
 		/// </remarks>
 		public static IHtmlContent PartialFor<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			string partialViewName,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
@@ -170,7 +170,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="modelPropertyExpression">The expression specifying the property inside the model.</param>
 		/// <returns>Returns the MVC string containing the plain text of the description, if found, else returns empty content.</returns>
 		public static IHtmlContent DescriptionFor<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
@@ -186,7 +186,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// </summary>
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
-		public static IHtmlContent DescriptionForModel(this HtmlHelper htmlHelper)
+		public static IHtmlContent DescriptionForModel(this IHtmlHelper htmlHelper)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 
@@ -204,7 +204,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// <param name="modelPropertyExpression">The expression specifying the property inside the model.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
 		public static IHtmlContent PromptFor<TModel, TField>(
-			this HtmlHelper<TModel> htmlHelper,
+			this IHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
@@ -220,7 +220,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// </summary>
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
-		public static IHtmlContent PromptForModel(this HtmlHelper htmlHelper)
+		public static IHtmlContent PromptForModel(this IHtmlHelper htmlHelper)
 		{
 			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 
@@ -253,11 +253,12 @@ namespace Grammophone.Domos.WebCore.Mvc
 				return HtmlString.Empty;
 		}
 
-		private static ModelMetadata GetPropertyMetadata<TModel, TField>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TField>> modelPropertyExpression)
+		private static ModelMetadata GetPropertyMetadata<TModel, TField>(IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
 			string propertyName = ExpressionHelper.GetExpressionText(modelPropertyExpression);
 
 			var metadata = htmlHelper.ViewData.ModelMetadata.GetMetadataForProperty(typeof(TModel), propertyName);
+			
 			return metadata;
 		}
 
