@@ -52,13 +52,6 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// </summary>
 		protected internal S LogicSession { get; }
 
-		/// <summary>
-		/// Creates a logic session for the controller.
-		/// </summary>
-		/// <param name="userContext">The Domos user context provided in the contruction of this controller.</param>
-		/// <returns>Returns a logic session of type <typeparamref name="S"/>.</returns>
-		protected abstract S CreateLogicSession(IUserContext userContext);
-
 		#endregion
 
 		#region Protected methods
