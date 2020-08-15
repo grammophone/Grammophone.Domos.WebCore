@@ -8,6 +8,8 @@ using Grammophone.Domos.Domain;
 using Grammophone.Domos.Logic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Grammophone.Domos.WebCore.Authorization
@@ -54,23 +56,53 @@ namespace Grammophone.Domos.WebCore.Authorization
 
 			var logicSession = serviceProvider.GetService<S>();
 
+			// If a logic session is available...
 			if (logicSession != null)
 			{
+				// If the user has the permission irrespective of segregation...
 				if (logicSession.HasPermission(requirement.PermissionName))
 				{
+					// ...succeed authorization.
 					context.Succeed(requirement);
 
 					return Task.CompletedTask;
 				}
+
+				// Else, attempt to get the segregation ID from the route data.
+				var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+
+				// If the HttpContext can be accessed...
+				if (httpContextAccessor != null)
+				{
+					// ...and if a parser for a segregation ID from route data is defined...
+					var segregationRouteParser = serviceProvider.GetService<ISegregationRouteParser>();
+
+					if (segregationRouteParser != null)
+					{
+						var httpContext = httpContextAccessor.HttpContext;
+
+						var routeData = httpContext.GetRouteData();
+
+						// ...attempt to get the segregation ID.
+						long? maybeSegregationID = segregationRouteParser.TryGetSegregationIdFromRouteData(routeData);
+
+						// If a segregation ID was found in the route data...
+						if (maybeSegregationID.HasValue)
+						{
+							// Test the permission against the segregation ID.
+							if (logicSession.HasPermission(requirement.PermissionName, maybeSegregationID.Value))
+							{
+								context.Succeed(requirement);
+
+								return Task.CompletedTask;
+							}
+						}
+					}
+				}
+
 			}
 
-			//var endpoint = context.Resource as Microsoft.AspNetCore.Http.Endpoint;
-
-			//if (endpoint != null)
-			//{
-
-			//}
-
+			// If we reached here, components were absent and/or all permission checks were negative.
 			context.Fail();
 
 			return Task.CompletedTask;
