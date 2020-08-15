@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
-namespace Grammophone.Domos.WebCore.Mvc
+namespace Grammophone.Domos.WebCore
 {
 	/// <summary>
 	/// Extensions for <see cref="HtmlHelper"/>.
