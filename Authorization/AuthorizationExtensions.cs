@@ -7,6 +7,7 @@ using Grammophone.Domos.DataAccess;
 using Grammophone.Domos.Domain;
 using Grammophone.Domos.Logic;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,6 +50,22 @@ namespace Grammophone.Domos.WebCore.Authorization
 			if (services == null) throw new ArgumentNullException(nameof(services));
 
 			return services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler<U, D, S>>();
+		}
+
+		/// <summary>
+		/// Add a parser for segregation ID from <see cref="RouteData"/>.
+		/// </summary>
+		/// <param name="services">The services container.</param>
+		/// <param name="segregationIdExtractor">The function to extract the segregation ID from route data.</param>
+		/// <returns>Returns the services container.</returns>
+		public static IServiceCollection AddSegregationRouteParser(this IServiceCollection services, Func<RouteData, long?> segregationIdExtractor)
+		{
+			if (services == null) throw new ArgumentNullException(nameof(services));
+			if (segregationIdExtractor == null) throw new ArgumentNullException(nameof(segregationIdExtractor));
+
+			var parser = new SegregationRouteParser(segregationIdExtractor);
+
+			return services.AddSingleton<ISegregationRouteParser>(parser);
 		}
 	}
 }
