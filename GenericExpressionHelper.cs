@@ -4,7 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Grammophone.Domos.WebCore
 {
@@ -18,28 +19,19 @@ namespace Grammophone.Domos.WebCore
 	/// </remarks>
 	public static class GenericExpressionHelper
 	{
+		private static readonly ModelExpressionProvider modelExpressionProvider = 
+			new ModelExpressionProvider(new EmptyModelMetadataProvider());
+
 		/// <summary>
 		/// Get the model name from a generic lambda expression.
 		/// </summary>
 		/// <param name="expression">The generic lambda expression.</param>
 		/// <returns>Returns the model name.</returns>
-		public static string GetExpressionText(LambdaExpression expression)
+		public static string GetExpressionText<TModel, TField>(Expression<Func<TModel, TField>> expression)
 		{
 			if (expression == null) throw new ArgumentNullException(nameof(expression));
 
-			// Is the lambda expression of the type "m => Convert(m.Value))"?
-			// If so, unpack the inner property expression.
-			var unaryExpression = expression.Body as UnaryExpression;
-
-			if (unaryExpression != null)
-			{
-				if (unaryExpression.NodeType == ExpressionType.Convert)
-				{
-					expression = Expression.Lambda(unaryExpression.Operand, expression.Parameters);
-				}
-			}
-
-			return ExpressionHelper.GetExpressionText(expression);
+			return modelExpressionProvider.GetExpressionText(expression);
 		}
 	}
 }

@@ -8,7 +8,6 @@ using Grammophone.Domos.Domain;
 using Grammophone.Domos.Logic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Grammophone.Domos.WebCore.Authorization

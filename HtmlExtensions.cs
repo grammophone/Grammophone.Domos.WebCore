@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Grammophone.Domos.WebCore
 {
@@ -137,7 +136,7 @@ namespace Grammophone.Domos.WebCore
 		/// This method takes care of the model prefix which the partial view must include
 		/// in its input field expressions.
 		/// </remarks>
-		public static IHtmlContent PartialFor<TModel, TField>(
+		public static Task<IHtmlContent> PartialForAsync<TModel, TField>(
 			this IHtmlHelper<TModel> htmlHelper,
 			string partialViewName,
 			Expression<Func<TModel, TField>> modelPropertyExpression)
@@ -148,7 +147,7 @@ namespace Grammophone.Domos.WebCore
 
 			var viewData = htmlHelper.ViewData;
 
-			string propertyName = ExpressionHelper.GetExpressionText(modelPropertyExpression);
+			string propertyName = GenericExpressionHelper.GetExpressionText(modelPropertyExpression);
 
 			string fullPropertyName = viewData.TemplateInfo.GetFullHtmlFieldName(propertyName);
 
@@ -158,7 +157,7 @@ namespace Grammophone.Domos.WebCore
 
 			partialViewData.TemplateInfo.HtmlFieldPrefix = fullPropertyName;
 
-			return htmlHelper.Partial(partialViewName, propertyValue, partialViewData);
+			return htmlHelper.PartialAsync(partialViewName, propertyValue, partialViewData);
 		}
 
 		/// <summary>
@@ -255,7 +254,7 @@ namespace Grammophone.Domos.WebCore
 
 		private static ModelMetadata GetPropertyMetadata<TModel, TField>(IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
-			string propertyName = ExpressionHelper.GetExpressionText(modelPropertyExpression);
+			string propertyName = GenericExpressionHelper.GetExpressionText(modelPropertyExpression);
 
 			var metadata = htmlHelper.ViewData.ModelMetadata.GetMetadataForProperty(typeof(TModel), propertyName);
 			
