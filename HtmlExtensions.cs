@@ -254,11 +254,9 @@ namespace Grammophone.Domos.WebCore
 
 		private static ModelMetadata GetPropertyMetadata<TModel, TField>(IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TField>> modelPropertyExpression)
 		{
-			string propertyName = GenericExpressionHelper.GetExpressionText(modelPropertyExpression);
-
-			var metadata = htmlHelper.ViewData.ModelMetadata.GetMetadataForProperty(typeof(TModel), propertyName);
+			var modelExpression = GenericExpressionHelper.CreateModelExpression(htmlHelper.ViewData, modelPropertyExpression);
 			
-			return metadata;
+			return modelExpression.Metadata;
 		}
 
 		#endregion
