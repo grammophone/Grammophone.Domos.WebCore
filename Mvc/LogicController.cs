@@ -50,6 +50,214 @@ namespace Grammophone.Domos.WebCore.Mvc
 
 		#endregion
 
+		#region Public methods
+
+		/// <inheritdoc/>
+		[NonAction]
+		public override bool TryValidateModel(object model)
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = base.TryValidateModel(model);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public override bool TryValidateModel(object model, string prefix)
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = base.TryValidateModel(model, prefix);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public override async Task<bool> TryUpdateModelAsync(object model, Type modelType, string prefix)
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, modelType, prefix);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model)
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix)
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, prefix);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, IValueProvider valueProvider)
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, prefix, valueProvider);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, IValueProvider valueProvider, Func<ModelMetadata, bool> propertyFilter)
+			where TModel : class
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, prefix, valueProvider, propertyFilter);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions)
+			where TModel : class
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, prefix, includeExpressions);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, Func<ModelMetadata, bool> propertyFilter)
+			where TModel : class
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, prefix, propertyFilter);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		/// <inheritdoc/>
+		[NonAction]
+		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, IValueProvider valueProvider, params Expression<Func<TModel, object>>[] includeExpressions)
+			where TModel : class
+		{
+			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
+
+			this.LogicSession.IsLazyLoadingEnabled = false;
+
+			try
+			{
+				bool validationResult = await base.TryUpdateModelAsync(model, prefix, valueProvider, includeExpressions);
+
+				return validationResult;
+			}
+			finally
+			{
+				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+			}
+		}
+
+		#endregion
+
 		#region Protected methods
 
 		/// <summary>
