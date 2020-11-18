@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grammophone.Domos.Logic;
 using Grammophone.Domos.WebCore.Models;
@@ -15,6 +17,8 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 	public class ActionParameterMetadata : DefaultModelMetadata
 	{
 		#region Private fields
+
+		private static readonly PropertyInfo nullPropertyInfo = typeof(ActionParameterMetadata).GetProperty(nameof(DisplayName));
 
 		private readonly ParameterSpecification parameterSpecification;
 
@@ -41,7 +45,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 			var parameterMetadataIdentity = ModelMetadataIdentity.ForProperty(parameterSpecification.Type, parameterSpecification.Key, containerModel.GetType());
 #pragma warning restore CS0618 // Type or member is obsolete
 
-			var parameterAttributes = ModelAttributes.GetAttributesForType(parameterSpecification.Type);
+			var parameterAttributes = ModelAttributes.GetAttributesForProperty(containerModel.GetType(), nullPropertyInfo, parameterSpecification.Type);
 
 			var propertyMetadataDetails = new DefaultMetadataDetails(
 				parameterMetadataIdentity,
@@ -51,10 +55,22 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 				PropertySetter = (thisModel, value) => ((ActionExecutionModel)thisModel).Parameters[parameterSpecification.Key] = value,
 				ValidationMetadata = new ValidationMetadata
 				{
-					IsRequired = parameterSpecification.IsRequired,
-					ValidateChildren = true
-				}
+					IsRequired = parameterSpecification.IsRequired
+				},
+				DisplayMetadata = new DisplayMetadata()
 			};
+
+			var dataTypeAttribute = parameterSpecification.ValidationAttributes.OfType<DataTypeAttribute>().FirstOrDefault();
+
+			if (dataTypeAttribute != null)
+			{
+				propertyMetadataDetails.DisplayMetadata.DataTypeName = dataTypeAttribute.GetDataTypeName();
+			}
+
+			foreach (var attribute in parameterSpecification.ValidationAttributes)
+			{
+				propertyMetadataDetails.ValidationMetadata.ValidatorMetadata.Add(attribute);
+			}
 
 			return propertyMetadataDetails;
 		}

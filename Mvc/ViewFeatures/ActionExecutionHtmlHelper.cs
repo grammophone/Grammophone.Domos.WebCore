@@ -60,7 +60,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ViewFeatures
 				var compositeMetadataDetailsProvider = this.ViewContext.HttpContext.RequestServices.GetService<ICompositeMetadataDetailsProvider>();
 
 				var actionExecutionModelMetadata = //new DefaultModelMetadata(this.MetadataProvider, compositeMetadataDetailsProvider, details);
-					new ActionExecutionModelMetadata(this.MetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
+					new ActionExecutionModelMetadata(this.MetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel, modelExplorer.Metadata.ContainerMetadata);
 
 				var actionExecutionModelExplorer = new ModelExplorer(this.MetadataProvider, modelExplorer.Container, actionExecutionModelMetadata, actionExecutionModel);
 

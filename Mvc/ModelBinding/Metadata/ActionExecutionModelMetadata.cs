@@ -30,8 +30,9 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 		internal ActionExecutionModelMetadata(
 			IModelMetadataProvider modelMetadataProvider,
 			ICompositeMetadataDetailsProvider detailsProvider,
-			ActionExecutionModel model)
-			: base(modelMetadataProvider, detailsProvider, CreateMetadataDetails(model))
+			ActionExecutionModel model,
+			ModelMetadata containerMetadata)
+			: base(modelMetadataProvider, detailsProvider, CreateMetadataDetails(model, containerMetadata))
 		{
 			this.model = model;
 			this.modelMetadataProvider = modelMetadataProvider;
@@ -59,15 +60,22 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 			return properties;
 		}
 
-		private static DefaultMetadataDetails CreateMetadataDetails(ActionExecutionModel model)
+		private static DefaultMetadataDetails CreateMetadataDetails(ActionExecutionModel model, ModelMetadata containerMetadata = null)
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
-			var modelMetadataIdentity = ModelMetadataIdentity.ForType(model.GetType());
+#pragma warning disable CS0618 // Type or member is obsolete
+			var modelMetadataIdentity = containerMetadata switch {
+				null => ModelMetadataIdentity.ForType(model.GetType()),
+				_ => ModelMetadataIdentity.ForProperty(model.GetType(), containerMetadata.Name, containerMetadata.ModelType)
+			};
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			var modelAttributes = ModelAttributes.GetAttributesForType(model.GetType());
 
-			var modelMetadataDetails = new DefaultMetadataDetails(modelMetadataIdentity, modelAttributes);
+			var modelMetadataDetails = new DefaultMetadataDetails(modelMetadataIdentity, modelAttributes)
+			{
+			};
 
 			return modelMetadataDetails;
 		}
