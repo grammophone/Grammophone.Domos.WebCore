@@ -59,7 +59,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 			return properties;
 		}
 
-		private static DefaultMetadataDetails CreateMetadataDetails(ActionExecutionModel model, ModelMetadata containerMetadata = null)
+		private static DefaultMetadataDetails CreateMetadataDetails(ActionExecutionModel model)
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
