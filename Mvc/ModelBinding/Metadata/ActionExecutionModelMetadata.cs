@@ -30,9 +30,8 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 		internal ActionExecutionModelMetadata(
 			IModelMetadataProvider modelMetadataProvider,
 			ICompositeMetadataDetailsProvider detailsProvider,
-			ActionExecutionModel model,
-			ModelMetadata containerMetadata)
-			: base(modelMetadataProvider, detailsProvider, CreateMetadataDetails(model, containerMetadata))
+			ActionExecutionModel model)
+			: base(modelMetadataProvider, detailsProvider, CreateMetadataDetails(model))
 		{
 			this.model = model;
 			this.modelMetadataProvider = modelMetadataProvider;
@@ -64,18 +63,11 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 		{
 			if (model == null) throw new ArgumentNullException(nameof(model));
 
-#pragma warning disable CS0618 // Type or member is obsolete
-			var modelMetadataIdentity = containerMetadata switch {
-				null => ModelMetadataIdentity.ForType(model.GetType()),
-				_ => ModelMetadataIdentity.ForProperty(model.GetType(), containerMetadata.Name, containerMetadata.ModelType)
-			};
-#pragma warning restore CS0618 // Type or member is obsolete
+			var modelMetadataIdentity = ModelMetadataIdentity.ForType(model.GetType());
 
 			var modelAttributes = ModelAttributes.GetAttributesForType(model.GetType());
 
-			var modelMetadataDetails = new DefaultMetadataDetails(modelMetadataIdentity, modelAttributes)
-			{
-			};
+			var modelMetadataDetails = new DefaultMetadataDetails(modelMetadataIdentity, modelAttributes);
 
 			return modelMetadataDetails;
 		}
