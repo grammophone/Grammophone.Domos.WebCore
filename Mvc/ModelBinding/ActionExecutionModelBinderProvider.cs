@@ -3,20 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grammophone.Domos.WebCore.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 {
 	/// <summary>
-	/// Model binder provider for <see cref="ActionExecutionModel"/>.
+	/// Provider for <see cref="ActionExecutionModelBinder"/>.
 	/// </summary>
 	public class ActionExecutionModelBinderProvider : IModelBinderProvider
 	{
-		#region Private field
-
-		#endregion
-
 		#region Construction
 
 		/// <summary>
@@ -28,22 +26,22 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 
 		#endregion
 
-		#region Public methods
+		#region IModelBinderProvider implementation
 
 		/// <summary>
-		/// If the model in metadata is <see cref="ActionExecutionModel"/>,
-		/// create and return a <see cref="ActionExecutionModelBinder"/>.
+		/// Returns an <see cref="ActionExecutionModelBinder"/>
+		/// if the bound model derives from <see cref="ActionExecutionModel"/>, else returns null.
 		/// </summary>
 		public IModelBinder GetBinder(ModelBinderProviderContext context)
 		{
 			if (context == null) throw new ArgumentNullException(nameof(context));
 
-			if (typeof(ActionExecutionModel).IsAssignableFrom(context.Metadata.ModelType))
+			if (!typeof(ActionExecutionModel).IsAssignableFrom(context.Metadata.ModelType))
 			{
-				return new ActionExecutionModelBinder();
+				return null;
 			}
 
-			return null;
+			return new ActionExecutionModelBinder(context);
 		}
 
 		#endregion
