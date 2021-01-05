@@ -36,6 +36,25 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 			this.parameterSpecification = parameterSpecification;
 		}
 
+		private static object GetParameterValue(ActionExecutionModel model, ParameterSpecification parameterSpecification)
+		{
+			if (model.Parameters.TryGetValue(parameterSpecification.Key, out object value))
+			{
+				return value;
+			}
+			else
+			{
+				return parameterSpecification.GetDefaultValue();
+			}
+		}
+
+		private static void SetParameterValue(ActionExecutionModel model, ParameterSpecification parameterSpecification, object value)
+		{
+			if (value == null) throw new ArgumentNullException(nameof(value));
+
+			model.Parameters[parameterSpecification.Key] = value;
+		}
+
 		private static DefaultMetadataDetails CreateMetadataDetails(ParameterSpecification parameterSpecification, ActionExecutionModel containerModel)
 		{
 			if (parameterSpecification == null) throw new ArgumentNullException(nameof(parameterSpecification));
@@ -51,8 +70,8 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 				parameterMetadataIdentity,
 				parameterAttributes)
 			{
-				PropertyGetter = thisModel => ((ActionExecutionModel)thisModel).Parameters[parameterSpecification.Key],
-				PropertySetter = (thisModel, value) => ((ActionExecutionModel)thisModel).Parameters[parameterSpecification.Key] = value,
+				PropertyGetter = thisModel => GetParameterValue((ActionExecutionModel)thisModel, parameterSpecification),
+				PropertySetter = (thisModel, value) => SetParameterValue((ActionExecutionModel)thisModel, parameterSpecification, value),
 				ValidationMetadata = new ValidationMetadata
 				{
 					IsRequired = parameterSpecification.IsRequired
