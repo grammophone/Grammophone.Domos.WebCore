@@ -8,6 +8,7 @@ using Grammophone.DataAccess;
 using Grammophone.Domos.Logic;
 using Grammophone.Domos.WebCore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Grammophone.Domos.WebCore.Mvc
@@ -38,7 +39,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		/// </remarks>
 		public void OnException(ExceptionContext filterContext)
 		{
-			if (filterContext.HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+			if (!IsInteractiveRequest(filterContext))
 			{
 				var exception = filterContext.Exception;
 
@@ -94,6 +95,21 @@ namespace Grammophone.Domos.WebCore.Mvc
 					filterContext.ExceptionHandled = true;
 				}
 			}
+		}
+
+		private bool IsInteractiveRequest(ExceptionContext filterContext)
+		{
+			// If this is an AJAX call, this is not a browser navigation request.
+			if (filterContext.HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest") return false;
+
+			// If the request was originated from a controller...
+			if (filterContext.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+			{
+				// If the controller was marked as [ApiController], this is not an interactive UI request.
+				if (controllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes(typeof(ApiControllerAttribute), true).Length > 0) return false;
+			}
+
+			return true;
 		}
 	}
 }
