@@ -23,6 +23,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 	/// The filter determines whether this is an AJAX request by examining if
 	/// there is a "X-Requested-With" header having value "XMLHttpRequest".
 	/// </remarks>
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 	public class HandleAjaxErrorAttribute : Attribute, IExceptionFilter
 	{
 		/// <summary>
