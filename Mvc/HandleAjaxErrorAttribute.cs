@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Grammophone.DataAccess;
+using Grammophone.Domos.Domain;
 using Grammophone.Domos.Logic;
 using Grammophone.Domos.WebCore.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 					switch (exception)
 					{
 						case AccessDeniedException _:
+						case AccessDeniedDomainException _:
 							statusCode = HttpStatusCode.Forbidden;
 							userMessage = ErrorMessages.ACCESS_DENIED;
 
