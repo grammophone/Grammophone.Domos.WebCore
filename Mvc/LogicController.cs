@@ -10,8 +10,13 @@ using Grammophone.Domos.Domain;
 using Grammophone.Domos.Domain.Workflow;
 using Grammophone.Domos.Logic;
 using Grammophone.Domos.WebCore.Models;
+using Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Grammophone.Domos.WebCore.Mvc
 {
@@ -26,6 +31,159 @@ namespace Grammophone.Domos.WebCore.Mvc
 		where D : IUsersDomainContainer<U>
 		where S : LogicSession<U, D>
 	{
+		#region Auxilliary classes
+
+		/// <summary>
+		/// An <see cref="IDisposable"/> value-type for turning off <see cref="LogicSession"/>'s <see cref="LogicSession{U, D}.IsLazyLoadingEnabled"/>
+		/// until <see cref="Dispose"/> method restores it.
+		/// </summary>
+		protected struct DisabledLazyLoadScope : IDisposable
+		{
+			private readonly LogicController<U, D, S> controller;
+
+			private readonly bool originalLazyLoadValue;
+
+			/// <summary>
+			/// Create.
+			/// </summary>
+			/// <param name="controller">The logic controller.</param>
+			public DisabledLazyLoadScope(LogicController<U, D, S> controller)
+			{
+				if (controller == null) throw new ArgumentNullException(nameof(controller));
+
+				this.controller = controller;
+
+				originalLazyLoadValue = controller.LogicSession.IsLazyLoadingEnabled;
+
+				controller.LogicSession.IsLazyLoadingEnabled = false;
+			}
+
+			/// <summary>
+			/// Restores the previous setting of <see cref="LogicSession{U, D}.IsLazyLoadingEnabled"/> of <see cref="LogicSession"/>.
+			/// </summary>
+			public void Dispose() => controller.LogicSession.IsLazyLoadingEnabled = originalLazyLoadValue;
+		}
+
+		private class MetadataObjectModelValidator : ObjectModelValidator
+		{
+			private readonly MvcOptions _mvcOptions;
+
+			public MetadataObjectModelValidator(IModelMetadataProvider modelMetadataProvider, IList<IModelValidatorProvider> validatorProviders, MvcOptions mvcOptions)
+				: base(modelMetadataProvider, validatorProviders)
+			{
+				_mvcOptions = mvcOptions;
+			}
+
+			public override ValidationVisitor GetValidationVisitor(ActionContext actionContext, IModelValidatorProvider validatorProvider, ValidatorCache validatorCache, IModelMetadataProvider metadataProvider, ValidationStateDictionary validationState)
+			{
+				var visitor = new ValidationVisitor(
+								actionContext,
+								validatorProvider,
+								validatorCache,
+								metadataProvider,
+								validationState)
+				{
+					MaxValidationDepth = _mvcOptions.MaxValidationDepth,
+					ValidateComplexTypesIfChildValidationFails = _mvcOptions.ValidateComplexTypesIfChildValidationFails,
+				};
+
+				return visitor;
+			}
+		}
+
+		/// <summary>
+		/// Installs a <see cref="IModelMetadataProvider"/> able to handle a model derived from <see cref="ActionExecutionModel"/>
+		/// in addition to the the behavior of the pre-existing <see cref="IModelMetadataProvider"/>
+		/// until <see cref="Dispose"/> is invoked, when the pre-existing provider is restored.
+		/// </summary>
+		protected class ActionExecutionModelMetadataProviderScope : IModelMetadataProvider, IDisposable
+		{
+			#region Private fields
+
+			private readonly ControllerBase controller;
+
+			private readonly ActionExecutionModel actionExecutionModel;
+
+			private readonly IModelMetadataProvider originalModelMetadataProvider;
+
+			private readonly IObjectModelValidator originalObjectModelValidator;
+
+			#endregion
+
+			#region Construction
+
+			internal ActionExecutionModelMetadataProviderScope(
+				LogicController<U, D, S> controller,
+				ActionExecutionModel actionExecutionModel)
+			{
+				this.controller = controller;
+				this.actionExecutionModel = actionExecutionModel;
+
+				originalModelMetadataProvider = controller.MetadataProvider;
+				originalObjectModelValidator = controller.ObjectValidator;
+
+				controller.MetadataProvider = this;
+
+				var mvcOptions = controller.HttpContext.RequestServices.GetRequiredService<IOptions<MvcOptions>>().Value;
+
+				controller.ObjectValidator = new MetadataObjectModelValidator(
+					this,
+					mvcOptions.ModelValidatorProviders,
+					mvcOptions);
+			}
+
+			#endregion
+
+			#region Public methods
+
+			/// <summary>
+			/// Restores the original metadata provider of the controller.
+			/// </summary>
+			public void Dispose()
+			{
+				controller.MetadataProvider = originalModelMetadataProvider;
+				controller.ObjectValidator = originalObjectModelValidator;
+			}
+
+			/// <inheritdoc/>
+			public IEnumerable<ModelMetadata> GetMetadataForProperties(Type modelType)
+			{
+				if (actionExecutionModel != null && typeof(ActionExecutionModel).IsAssignableFrom(modelType))
+				{
+					var compositeMetadataDetailsProvider = controller.HttpContext.RequestServices.GetService<ICompositeMetadataDetailsProvider>();
+
+					var metadata = ActionExecutionModelMetadataFactory.GetMetadata(controller.MetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
+
+					return metadata.GetMetadataForProperties(modelType);
+				}
+				else
+				{
+					return originalModelMetadataProvider.GetMetadataForProperties(modelType);
+				}
+			}
+
+			/// <inheritdoc/>
+			public ModelMetadata GetMetadataForType(Type modelType)
+			{
+				if (modelType == null) throw new ArgumentNullException(nameof(modelType));
+
+				if (typeof(ActionExecutionModel).IsAssignableFrom(modelType))
+				{
+					var compositeMetadataDetailsProvider = controller.HttpContext.RequestServices.GetService<ICompositeMetadataDetailsProvider>();
+
+					return ActionExecutionModelMetadataFactory.GetMetadata(controller.MetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
+				}
+				else
+				{
+					return originalModelMetadataProvider.GetMetadataForType(modelType);
+				}
+			}
+
+			#endregion
+		}
+
+		#endregion
+
 		#region Construction
 
 		/// <summary>
@@ -44,7 +202,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		#region Protected properties
 
 		/// <summary>
-		/// The LifeAccount session associated with the controller.
+		/// The Domos session associated with the controller.
 		/// </summary>
 		protected internal S LogicSession { get; }
 
@@ -56,19 +214,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		[NonAction]
 		public override bool TryValidateModel(object model)
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = base.TryValidateModel(model);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return base.TryValidateModel(model);
 			}
 		}
 
@@ -76,19 +225,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		[NonAction]
 		public override bool TryValidateModel(object model, string prefix)
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = base.TryValidateModel(model, prefix);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return base.TryValidateModel(model, prefix);
 			}
 		}
 
@@ -96,19 +236,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		[NonAction]
 		public override async Task<bool> TryUpdateModelAsync(object model, Type modelType, string prefix)
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, modelType, prefix);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, modelType, prefix);
 			}
 		}
 
@@ -116,19 +247,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		[NonAction]
 		public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model)
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model);
 			}
 		}
 
@@ -136,19 +258,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		[NonAction]
 		public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix)
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, prefix);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, prefix);
 			}
 		}
 
@@ -156,19 +269,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		[NonAction]
 		public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, IValueProvider valueProvider)
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, prefix, valueProvider);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, prefix, valueProvider);
 			}
 		}
 
@@ -177,19 +281,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, IValueProvider valueProvider, Func<ModelMetadata, bool> propertyFilter)
 			where TModel : class
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, prefix, valueProvider, propertyFilter);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, prefix, valueProvider, propertyFilter);
 			}
 		}
 
@@ -198,19 +293,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions)
 			where TModel : class
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, prefix, includeExpressions);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, prefix, includeExpressions);
 			}
 		}
 
@@ -219,19 +305,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, Func<ModelMetadata, bool> propertyFilter)
 			where TModel : class
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, prefix, propertyFilter);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, prefix, propertyFilter);
 			}
 		}
 
@@ -240,25 +317,30 @@ namespace Grammophone.Domos.WebCore.Mvc
 		public new async Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, IValueProvider valueProvider, params Expression<Func<TModel, object>>[] includeExpressions)
 			where TModel : class
 		{
-			bool previousLazyLoadingSetting = this.LogicSession.IsLazyLoadingEnabled;
-
-			this.LogicSession.IsLazyLoadingEnabled = false;
-
-			try
+			using (GetDisabledLazyLoadScope())
+			using (GetActionExecutionModelMetadataProviderScope(model as ActionExecutionModel))
 			{
-				bool validationResult = await base.TryUpdateModelAsync(model, prefix, valueProvider, includeExpressions);
-
-				return validationResult;
-			}
-			finally
-			{
-				this.LogicSession.IsLazyLoadingEnabled = previousLazyLoadingSetting;
+				return await base.TryUpdateModelAsync(model, prefix, valueProvider, includeExpressions);
 			}
 		}
 
 		#endregion
 
 		#region Protected methods
+
+		/// <summary>
+		/// Returns an <see cref="IDisposable"/> handle to turn off the <see cref="LogicSession"/>'s <see cref="LogicSession{U, D}.IsLazyLoadingEnabled"/>
+		/// until <see cref="IDisposable.Dispose"/> method is called and the setting is restored. Suited for 'using' statement.
+		/// </summary>
+		protected DisabledLazyLoadScope GetDisabledLazyLoadScope() => new(this);
+
+		/// <summary>
+		/// Returns an <see cref="IDisposable"/> <see cref="IModelMetadataProvider"/> able to handle a model derived from <see cref="ActionExecutionModel"/>
+		/// in addition to the the behavior of the pre-existing <see cref="IModelMetadataProvider"/>
+		/// until <see cref="IDisposable.Dispose"/> is invoked, when the pre-existing provider is restored.
+		/// </summary>
+		/// <param name="model">The instance derived from <see cref="ActionExecutionModel"/> to be able to get metadata for.</param>
+		protected ActionExecutionModelMetadataProviderScope GetActionExecutionModelMetadataProviderScope(ActionExecutionModel model) => new(this, model);
 
 		/// <summary>
 		/// Using the controller's value provider, Bind a <see cref="IStatefulObjectExecutionModel"/> for executing a path on a stateful object.
@@ -277,16 +359,16 @@ namespace Grammophone.Domos.WebCore.Mvc
 		{
 			if (workflowManager == null) throw new ArgumentNullException(nameof(workflowManager));
 
-			var valueProvider = await CompositeValueProvider.CreateAsync(this.ControllerContext);
-
-			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, valueProvider, nameof(StatefulObjectExecutionModel<SO>.ExecutionModel));
-
 			string executionModelPrefix;
 
 			if (!String.IsNullOrEmpty(prefix))
 				executionModelPrefix = $"{prefix}.{nameof(StatefulObjectExecutionModel<SO>.ExecutionModel)}";
 			else
 				executionModelPrefix = nameof(StatefulObjectExecutionModel<SO>.ExecutionModel);
+
+			var valueProvider = await CompositeValueProvider.CreateAsync(this.ControllerContext);
+
+			var executionModel = new StatePathExecutionModel<U, ST, SO>(workflowManager, valueProvider, executionModelPrefix);
 
 			await TryUpdateModelAsync(executionModel, executionModelPrefix);
 

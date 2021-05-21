@@ -91,6 +91,14 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding.Metadata
 				propertyMetadataDetails.ValidationMetadata.ValidatorMetadata.Add(attribute);
 			}
 
+			foreach (var attribute in parameterSpecification.Type.GetCustomAttributes<ValidationAttribute>(true))
+			{
+				propertyMetadataDetails.ValidationMetadata.ValidatorMetadata.Add(attribute);
+			}
+
+			if (propertyMetadataDetails.ValidationMetadata.ValidatorMetadata.Count > 0 || typeof(IValidatableObject).IsAssignableFrom(parameterSpecification.Type))
+				propertyMetadataDetails.ValidationMetadata.HasValidators = true;
+
 			return propertyMetadataDetails;
 		}
 
