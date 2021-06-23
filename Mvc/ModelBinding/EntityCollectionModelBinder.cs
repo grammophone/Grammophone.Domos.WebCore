@@ -22,9 +22,10 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 	/// <summary>
 	/// Model binder for a collection of items implementing <see cref="IEntityWithID{K}"/>.
 	/// </summary>
-	/// <typeparam name="E"></typeparam>
-	public class EntityCollectionModelBinder<E> : CollectionModelBinder<E>
-		where E : IEntityWithID<object>, new()
+	/// <typeparam name="K">The type of the key of the elements.</typeparam>
+	/// <typeparam name="E">The type of the collcetion's elements.</typeparam>
+	public class EntityCollectionModelBinder<K, E> : CollectionModelBinder<E>
+		where E : IEntityWithID<K>, new()
 	{
 		#region Auxilliary types
 
@@ -323,30 +324,53 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 
 		/// <inheritdoc/>
 		public EntityCollectionModelBinder(
-		IModelBinder elementBinder,
-		ILoggerFactory loggerFactory)
+			IModelBinder keyBinder,
+			ModelMetadata keyMetadata,
+			IModelBinder elementBinder,
+			ILoggerFactory loggerFactory)
 		: base(elementBinder, loggerFactory)
 		{
+			if (keyBinder == null) throw new ArgumentNullException(nameof(keyBinder));
+			if (keyMetadata == null) throw new ArgumentNullException(nameof(keyMetadata));
+
+			this.KeyMetadata = keyMetadata;
+			this.KeyBinder = keyBinder;
 		}
 
 		/// <inheritdoc/>
 		public EntityCollectionModelBinder(
+			IModelBinder keyBinder,
+			ModelMetadata keyMetadata,
 			IModelBinder elementBinder,
 			ILoggerFactory loggerFactory,
 			bool allowValidatingTopLevelNodes)
 			: base(elementBinder, loggerFactory, allowValidatingTopLevelNodes)
 		{
+			if (keyBinder == null) throw new ArgumentNullException(nameof(keyBinder));
+			if (keyMetadata == null) throw new ArgumentNullException(nameof(keyMetadata));
+
+			this.KeyMetadata = keyMetadata;
+			this.KeyBinder = keyBinder;
+
 			this.AllowValidatingTopLevelNodes = allowValidatingTopLevelNodes;
 		}
 
 		/// <inheritdoc/>
 		public EntityCollectionModelBinder(
+			IModelBinder keyBinder,
+			ModelMetadata keyMetadata,
 			IModelBinder elementBinder,
 			ILoggerFactory loggerFactory,
 			bool allowValidatingTopLevelNodes,
 			MvcOptions mvcOptions)
 			: base(elementBinder, loggerFactory, allowValidatingTopLevelNodes, mvcOptions)
 		{
+			if (keyBinder == null) throw new ArgumentNullException(nameof(keyBinder));
+			if (keyMetadata == null) throw new ArgumentNullException(nameof(keyMetadata));
+
+			this.KeyMetadata = keyMetadata;
+			this.KeyBinder = keyBinder;
+
 			maxModelBindingCollectionSize = mvcOptions.MaxModelBindingCollectionSize;
 
 			this.AllowValidatingTopLevelNodes = allowValidatingTopLevelNodes;
@@ -355,6 +379,16 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 		#endregion
 
 		#region Protected properties
+
+		/// <summary>
+		/// The metadata for keys of type <typeparamref name="K"/>.
+		/// </summary>
+		protected ModelMetadata KeyMetadata { get; }
+		
+		/// <summary>
+		/// <see cref="IModelBinder"/> for keys of type <typeparamref name="K"/>.
+		/// </summary>
+		protected IModelBinder KeyBinder { get; }
 
 		/// <summary>
 		/// Indication that validation of top-level models is enabled. If <see langword="true"/> and
@@ -521,14 +555,14 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 					string idPropertyName = ModelNames.CreatePropertyModelName(bindingContext.ModelName, nameof(IEntityWithID<object>.ID));
 
 					using (bindingContext.EnterNestedScope(
-							elementMetadata,
-							fieldName: nameof(IEntityWithID<object>.ID),
-							modelName: idPropertyName,
-							model: null))
+						this.KeyMetadata,
+						fieldName: nameof(IEntityWithID<object>.ID),
+						modelName: idPropertyName,
+						model: null))
 					{
-						await ElementBinder.BindModelAsync(bindingContext);
+						await this.KeyBinder.BindModelAsync(bindingContext);
 
-						object id = bindingContext.Result.Model;
+						K id = (K)bindingContext.Result.Model;
 
 						foundExistingElement = existingElementsByID.TryGetValue(id, out existingElement);
 					}
@@ -536,10 +570,10 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 
 				// Enter new scope to change ModelMetadata and isolate element binding operations.
 				using (bindingContext.EnterNestedScope(
-						elementMetadata,
-						fieldName: bindingContext.FieldName,
-						modelName: bindingContext.ModelName,
-						model: foundExistingElement ? existingElement : null))
+					elementMetadata,
+					fieldName: bindingContext.FieldName,
+					modelName: bindingContext.ModelName,
+					model: foundExistingElement ? existingElement : null))
 				{
 					await ElementBinder.BindModelAsync(bindingContext);
 
@@ -599,14 +633,14 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 					string idPropertyName = ModelNames.CreatePropertyModelName(fullChildName, nameof(IEntityWithID<object>.ID));
 
 					using (bindingContext.EnterNestedScope(
-							elementMetadata,
-							fieldName: nameof(IEntityWithID<object>.ID),
-							modelName: idPropertyName,
-							model: null))
+						this.KeyMetadata,
+						fieldName: nameof(IEntityWithID<object>.ID),
+						modelName: idPropertyName,
+						model: null))
 					{
-						await ElementBinder.BindModelAsync(bindingContext);
+						await this.KeyBinder.BindModelAsync(bindingContext);
 
-						object id = bindingContext.Result.Model;
+						K id = (K)bindingContext.Result.Model;
 
 						foundExistingElement = existingElementsByID.TryGetValue(id, out existingElement);
 					}
@@ -619,7 +653,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 						modelName: fullChildName,
 						model: foundExistingElement ? existingElement : null))
 				{
-					await ElementBinder.BindModelAsync(bindingContext);
+					await this.ElementBinder.BindModelAsync(bindingContext);
 					result = bindingContext.Result;
 				}
 
