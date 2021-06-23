@@ -640,9 +640,12 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 					{
 						await this.KeyBinder.BindModelAsync(bindingContext);
 
-						K id = (K)bindingContext.Result.Model;
+						if (bindingContext.Result.IsModelSet)
+						{
+							K id = (K)bindingContext.Result.Model;
 
-						foundExistingElement = existingElementsByID.TryGetValue(id, out existingElement);
+							foundExistingElement = existingElementsByID.TryGetValue(id, out existingElement);
+						}
 					}
 				}
 
