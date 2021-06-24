@@ -25,7 +25,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 	/// <typeparam name="K">The type of the key of the elements.</typeparam>
 	/// <typeparam name="E">The type of the collcetion's elements.</typeparam>
 	public class EntityCollectionModelBinder<K, E> : CollectionModelBinder<E>
-		where E : IEntityWithID<K>, new()
+		where E : IEntityWithID<K>
 	{
 		#region Auxilliary types
 
@@ -580,7 +580,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 					if (bindingContext.Result.IsModelSet)
 					{
 						var boundValue = bindingContext.Result.Model;
-						boundCollection.Add(boundValue is E element ? element : new E());
+						boundCollection.Add(boundValue is E element ? element : default);
 					}
 				}
 			}
@@ -674,7 +674,7 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 					break;
 				}
 
-				boundCollection.Add(boundValue is E element ? element : new E());
+				boundCollection.Add(boundValue is E element ? element : default);
 			}
 
 			// Did the collection grow larger than the limit?
