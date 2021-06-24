@@ -62,7 +62,9 @@ namespace Grammophone.Domos.WebCore.Mvc.ModelBinding
 				propertyBinders[propertyMetadata] = providerContext.CreateBinder(propertyMetadata);
 			}
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			var modelBinder = new ComplexTypeModelBinder(propertyBinders, loggerFactory);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			await modelBinder.BindModelAsync(bindingContext);
 		}
