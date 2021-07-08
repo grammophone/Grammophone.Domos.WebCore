@@ -148,11 +148,13 @@ namespace Grammophone.Domos.WebCore.Mvc
 			/// <inheritdoc/>
 			public IEnumerable<ModelMetadata> GetMetadataForProperties(Type modelType)
 			{
-				if (actionExecutionModel != null && typeof(ActionExecutionModel).IsAssignableFrom(modelType))
+				if (actionExecutionModel != null
+					&& typeof(ActionExecutionModel).IsAssignableFrom(modelType)
+					&& originalModelMetadataProvider is not ActionExecutionModelMetadataProviderScope)
 				{
 					var compositeMetadataDetailsProvider = controller.HttpContext.RequestServices.GetService<ICompositeMetadataDetailsProvider>();
 
-					var metadata = ActionExecutionModelMetadataFactory.GetMetadata(controller.MetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
+					var metadata = ActionExecutionModelMetadataFactory.GetMetadata(originalModelMetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
 
 					return metadata.GetMetadataForProperties(modelType);
 				}
@@ -167,11 +169,13 @@ namespace Grammophone.Domos.WebCore.Mvc
 			{
 				if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
-				if (typeof(ActionExecutionModel).IsAssignableFrom(modelType))
+				if (actionExecutionModel != null
+					&& typeof(ActionExecutionModel).IsAssignableFrom(modelType)
+					&& originalModelMetadataProvider is not ActionExecutionModelMetadataProviderScope)
 				{
 					var compositeMetadataDetailsProvider = controller.HttpContext.RequestServices.GetService<ICompositeMetadataDetailsProvider>();
 
-					return ActionExecutionModelMetadataFactory.GetMetadata(controller.MetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
+					return ActionExecutionModelMetadataFactory.GetMetadata(originalModelMetadataProvider, compositeMetadataDetailsProvider, actionExecutionModel);
 				}
 				else
 				{
