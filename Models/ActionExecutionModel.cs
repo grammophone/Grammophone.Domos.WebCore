@@ -40,7 +40,7 @@ namespace Grammophone.Domos.WebCore.Models
 
 			var actionCodeNameResult = valueProvider.GetValue(actionCodeNameKey);
 
-			if (actionCodeNameResult == null || String.IsNullOrEmpty(actionCodeNameResult.FirstValue))
+			if (String.IsNullOrEmpty(actionCodeNameResult.FirstValue))
 			{
 				throw new ApplicationException($"The value provider does not contain an item under key '{actionCodeNameKey}'.");
 			}

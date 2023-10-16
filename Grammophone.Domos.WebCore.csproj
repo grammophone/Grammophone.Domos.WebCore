@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <ProjectGuid>{5c3036b1-d8f0-4611-9613-26d96480bf91}</ProjectGuid>
-		<TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
+		<TargetFramework>net5.0</TargetFramework>
 		<AssemblyTitle>Grammophone.Domos.WebCore</AssemblyTitle>
     <Product>Grammophone.Domos.WebCore</Product>
     <Copyright>Copyright © domos.tech 2020</Copyright>
