@@ -65,7 +65,7 @@ namespace Grammophone.Domos.WebCore
 				return modelStateEntry.ValidationState == ModelValidationState.Valid;
 			}
 
-			return false;
+			return true;
 		}
 
 		/// <summary>
