@@ -30,18 +30,20 @@ namespace Grammophone.Domos.WebCore
 		public static string GetExpressionText<TModel, TField>(Expression<Func<TModel, TField>> expression)
 			=> modelExpressionProvider.GetExpressionText(expression);
 
-		/// <summary>
-		/// Returns a <see cref="ModelExpression"/> describing an <paramref name="expression"/>.
-		/// </summary>
-		/// <typeparam name="TModel">The type of the model.</typeparam>
-		/// <typeparam name="TValue">The type of the <paramref name="expression"/> result.</typeparam>
-		/// <param name="viewData">
-		/// The <see cref="ViewDataDictionary{TModel}"/> containing the <see cref="ViewDataDictionary{TModel}.Model"/>
-		/// against which the expression is evaluated.
-		/// </param>
-		/// <param name="expression">The expression on the model.</param>
-		/// <returns>Returns the <see cref="ModelExpression"/> corresponding to the <paramref name="expression"/>.</returns>
-		public static ModelExpression CreateModelExpression<TModel, TValue>(ViewDataDictionary<TModel> viewData, Expression<Func<TModel, TValue>> expression)
-			=> modelExpressionProvider.CreateModelExpression(viewData, expression);
+		public static ModelExplorer GetModelExplorer<TModel, TValue>(ViewDataDictionary<TModel> viewData, Expression<Func<TModel, TValue>> expression)
+		{
+			string expressionText = modelExpressionProvider.GetExpressionText(expression);
+
+			ModelExplorer modelExplorer = viewData.ModelExplorer;
+
+			foreach (string expressionComponent in expressionText.Split('.'))
+			{
+				if (String.IsNullOrEmpty(expressionComponent)) continue;
+
+				modelExplorer = modelExplorer.GetExplorerForProperty(expressionComponent);
+			}
+
+			return modelExplorer;
+		}
 	}
 }
