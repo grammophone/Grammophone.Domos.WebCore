@@ -189,7 +189,7 @@ namespace Grammophone.Domos.WebCore
 
 			var metadata = propertyModelExplorer.Metadata;
 
-			string templateName = metadata.TemplateHint ?? metadata.ModelType.Name;
+			string templateName = metadata.TemplateHint ?? metadata.DataTypeName ?? metadata.ModelType.Name;
 
 			return PartialForAsync<TModel, TField>(htmlHelper, $"EditorFieldTemplates/{templateName}", propertyName, propertyModelExplorer, additionalViewData);
 		}
@@ -225,7 +225,7 @@ namespace Grammophone.Domos.WebCore
 
 			var metadata = propertyModelExplorer.Metadata;
 
-			string templateName = metadata.TemplateHint ?? metadata.ModelType.Name;
+			string templateName = metadata.TemplateHint ?? metadata.DataTypeName ?? metadata.ModelType.Name;
 
 			return PartialForAsync<TModel, TField>(htmlHelper, $"DisplayFieldTemplates/{templateName}", propertyName, propertyModelExplorer, additionalViewData);
 		}
