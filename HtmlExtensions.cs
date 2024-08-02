@@ -69,6 +69,33 @@ namespace Grammophone.Domos.WebCore
 		}
 
 		/// <summary>
+		/// Get the collection of validation mesasges for a field. If the field is valid, the collection is empty.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the model.</typeparam>
+		/// <typeparam name="TField">The type of the model's field.</typeparam>
+		/// <param name="htmlHelper">The html helper.</param>
+		/// <param name="fieldSelector">An expression specifying the field.</param>
+		/// <returns>Returns the collection of error messages, or an empty collection if the field is valid.</returns>
+		public static IEnumerable<string> ValidationMessagesFor<TModel, TField>(
+			this IHtmlHelper<TModel> htmlHelper,
+			Expression<Func<TModel, TField>> fieldSelector)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException("htmlHelper");
+			if (fieldSelector == null) throw new ArgumentNullException("fieldSelector");
+
+			string fieldPath = htmlHelper.NameFor(fieldSelector).ToString();
+
+			var modelState = htmlHelper.ViewData.ModelState;
+
+			if (modelState.TryGetValue(fieldPath, out ModelStateEntry modelStateEntry))
+			{
+				return modelStateEntry.Errors.Select(e => e.ErrorMessage);
+			}
+
+			return Enumerable.Empty<string>();
+		}
+
+		/// <summary>
 		/// Output an html fragment when a model field with any subproperties is valid.
 		/// Model validation must have taken place before this call, 
 		/// else the field is presumed always valid.
