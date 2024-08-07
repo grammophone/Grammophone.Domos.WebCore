@@ -30,6 +30,14 @@ namespace Grammophone.Domos.WebCore
 		public static string GetExpressionText<TModel, TField>(Expression<Func<TModel, TField>> expression)
 			=> modelExpressionProvider.GetExpressionText(expression);
 
+		/// <summary>
+		/// Get a model explorer for an expression traversing properties of the model recursively.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the model.</typeparam>
+		/// <typeparam name="TValue">The type of the value the expression selects from the model.</typeparam>
+		/// <param name="viewData">The view data.</param>
+		/// <param name="expression">The expression accessing the property of the model.</param>
+		/// <returns>Returns a model explorer for the expression.</returns>
 		public static ModelExplorer GetModelExplorer<TModel, TValue>(ViewDataDictionary<TModel> viewData, Expression<Func<TModel, TValue>> expression)
 		{
 			string expressionText = modelExpressionProvider.GetExpressionText(expression);
