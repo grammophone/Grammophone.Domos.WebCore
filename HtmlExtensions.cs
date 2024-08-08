@@ -216,7 +216,7 @@ namespace Grammophone.Domos.WebCore
 
 			var metadata = propertyModelExplorer.Metadata;
 
-			string templateName = metadata.TemplateHint ?? metadata.DataTypeName ?? metadata.UnderlyingOrModelType.Name;
+			string templateName = GetTemplateName(metadata);
 
 			return PartialForAsync<TModel, TField>(htmlHelper, $"EditorFieldTemplates/{templateName}", propertyName, propertyModelExplorer, additionalViewData);
 		}
@@ -252,7 +252,7 @@ namespace Grammophone.Domos.WebCore
 
 			var metadata = propertyModelExplorer.Metadata;
 
-			string templateName = metadata.TemplateHint ?? metadata.DataTypeName ?? metadata.UnderlyingOrModelType.Name;
+			string templateName = GetTemplateName(metadata);
 
 			return PartialForAsync<TModel, TField>(htmlHelper, $"DisplayFieldTemplates/{templateName}", propertyName, propertyModelExplorer, additionalViewData);
 		}
@@ -417,6 +417,12 @@ namespace Grammophone.Domos.WebCore
 
 			return htmlHelper.PartialAsync(partialViewName, propertyModelExplorer.Model, partialViewData);
 		}
+
+		/// <summary>
+		/// Get the template name that matches the model described in <paramref name="metadata"/>.
+		/// </summary>
+		private static string GetTemplateName(ModelMetadata metadata)
+			=> metadata.TemplateHint ?? metadata.DataTypeName ?? (metadata.IsEnum ? "Enum" : metadata.UnderlyingOrModelType.Name);
 
 		#endregion
 	}
