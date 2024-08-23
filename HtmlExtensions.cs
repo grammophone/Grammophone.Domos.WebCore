@@ -222,6 +222,37 @@ namespace Grammophone.Domos.WebCore
 		}
 
 		/// <summary>
+		/// Show a partial view in folder /EditorFieldTemplates for a part of the view's model, similar to the EditorFor method.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the main model.</typeparam>
+		/// <typeparam name="TField">The type of the part in the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="modelPropertyExpression">An expression that defines the part inside the main model.</param>
+		/// <param name="templateName">The name of the template inside the /EditorFieldTemplates folder to use.</param>
+		/// <param name="additionalViewData">
+		/// Optional anonymous <see cref="object"/> or <see cref="IDictionary{String, Object}"/>
+		/// that can contain additional view data that will be merged into the
+		/// <see cref="ViewDataDictionary{TModel}"/> instance created for the template.
+		/// </param>
+		/// <returns>Returns the rendered partial view.</returns>
+		/// <remarks>
+		/// This method takes care of the model prefix which the partial view must include
+		/// in its input field expressions.
+		/// </remarks>
+		public static Task<IHtmlContent> EditorFieldForAsync<TModel, TField>(
+			this IHtmlHelper<TModel> htmlHelper,
+			Expression<Func<TModel, TField>> modelPropertyExpression,
+			string templateName,
+			object additionalViewData = null)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
+			if (templateName == null) throw new ArgumentNullException(nameof(templateName));
+
+			return PartialForAsync<TModel, TField>(htmlHelper, $"EditorFieldTemplates/{templateName}", modelPropertyExpression, additionalViewData);
+		}
+
+		/// <summary>
 		/// Show a partial view in folder /DisplayFieldTemplates for a part of the view's model, similar to the DisplayFor method.
 		/// </summary>
 		/// <typeparam name="TModel">The type of the main model.</typeparam>
@@ -255,6 +286,37 @@ namespace Grammophone.Domos.WebCore
 			string templateName = GetTemplateName(metadata);
 
 			return PartialForAsync<TModel, TField>(htmlHelper, $"DisplayFieldTemplates/{templateName}", propertyName, propertyModelExplorer, additionalViewData);
+		}
+
+		/// <summary>
+		/// Show a partial view in folder /DisplayFieldTemplates for a part of the view's model, similar to the DisplayFor method.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the main model.</typeparam>
+		/// <typeparam name="TField">The type of the part in the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="modelPropertyExpression">An expression that defines the part inside the main model.</param>
+		/// <param name="templateName">The template name inside the /DisplayFieldTemplates folder to use.</param>
+		/// <param name="additionalViewData">
+		/// Optional anonymous <see cref="object"/> or <see cref="IDictionary{String, Object}"/>
+		/// that can contain additional view data that will be merged into the
+		/// <see cref="ViewDataDictionary{TModel}"/> instance created for the template.
+		/// </param>
+		/// <returns>Returns the rendered partial view.</returns>
+		/// <remarks>
+		/// This method takes care of the model prefix which the partial view must include
+		/// in its input field expressions.
+		/// </remarks>
+		public static Task<IHtmlContent> DisplayFieldForAsync<TModel, TField>(
+			this IHtmlHelper<TModel> htmlHelper,
+			Expression<Func<TModel, TField>> modelPropertyExpression,
+			string templateName,
+			object additionalViewData = null)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
+			if (templateName == null) throw new ArgumentNullException(nameof(templateName));
+
+			return PartialForAsync<TModel, TField>(htmlHelper, $"DisplayFieldTemplates/{templateName}", modelPropertyExpression, additionalViewData);
 		}
 
 		/// <summary>
