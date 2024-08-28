@@ -387,6 +387,29 @@ namespace Grammophone.Domos.WebCore
 			return GetPromptContent(metadata);
 		}
 
+		/// <summary>
+		/// Output an HTNL attribute only if a condition is met, else out[ut nothing.
+		/// </summary>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="condition">The condition for writing the attribute/</param>
+		/// <param name="attributeName">The attribute name.</param>
+		/// <param name="attributeValue">The attribute value.</param>
+		public static IHtmlContent ConditionalAttribute(this IHtmlHelper htmlHelper, bool condition, string attributeName, object attributeValue)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (attributeName == null) throw new ArgumentNullException(nameof(attributeName));
+			if (attributeValue == null) throw new ArgumentNullException(nameof(attributeValue));
+
+			if (condition)
+			{
+				return new HtmlString($"{attributeName}=\"{attributeValue}\"");
+			}
+			else
+			{
+				return HtmlString.Empty;
+			}
+		}
+
 		#endregion
 
 		#region Private methods
