@@ -340,6 +340,25 @@ namespace Grammophone.Domos.WebCore
 		}
 
 		/// <summary>
+		/// Get the description for a property of the model of a view, if any.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="modelPropertyExpressionText">The expression text specifying the property inside the model.</param>
+		/// <returns>Returns the MVC string containing the plain text of the description, if found, else returns empty content.</returns>
+		public static IHtmlContent DescriptionFor<TModel>(
+			this IHtmlHelper<TModel> htmlHelper,
+			string modelPropertyExpressionText)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (modelPropertyExpressionText == null) throw new ArgumentNullException(nameof(modelPropertyExpressionText));
+
+			ModelMetadata metadata = GetPropertyMetadata(htmlHelper, modelPropertyExpressionText);
+
+			return GetDescriptionContent(metadata);
+		}
+
+		/// <summary>
 		/// Get the description for the model of the view, if any.
 		/// </summary>
 		/// <param name="htmlHelper">The HTML helper.</param>
@@ -369,6 +388,25 @@ namespace Grammophone.Domos.WebCore
 			if (modelPropertyExpression == null) throw new ArgumentNullException(nameof(modelPropertyExpression));
 
 			ModelMetadata metadata = GetPropertyMetadata(htmlHelper, modelPropertyExpression);
+
+			return GetPromptContent(metadata);
+		}
+
+		/// <summary>
+		/// Get the prompt for a property of the model of a view, if any.
+		/// </summary>
+		/// <typeparam name="TModel">The type of the model.</typeparam>
+		/// <param name="htmlHelper">The HTML helper.</param>
+		/// <param name="modelPropertyExpressionText">The expression text specifying the property inside the model.</param>
+		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
+		public static IHtmlContent PromptFor<TModel>(
+			this IHtmlHelper<TModel> htmlHelper,
+			string modelPropertyExpressionText)
+		{
+			if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
+			if (modelPropertyExpressionText == null) throw new ArgumentNullException(nameof(modelPropertyExpressionText));
+
+			ModelMetadata metadata = GetPropertyMetadata(htmlHelper, modelPropertyExpressionText);
 
 			return GetPromptContent(metadata);
 		}
@@ -441,6 +479,13 @@ namespace Grammophone.Domos.WebCore
 			return modelExplorer.Metadata;
 		}
 
+		private static ModelMetadata GetPropertyMetadata<TModel>(IHtmlHelper<TModel> htmlHelper, string modelPropertyExpressionText)
+		{
+			var modelExplorer = GenericExpressionHelper.GetModelExplorer(htmlHelper.ViewData, modelPropertyExpressionText);
+
+			return modelExplorer.Metadata;
+		}
+
 		/// <summary>
 		/// Show a partial view for a part of the view's model.
 		/// </summary>
@@ -478,6 +523,17 @@ namespace Grammophone.Domos.WebCore
 
 			var partialViewData = new ViewDataDictionary<TField>(viewData, propertyModelExplorer.Model);
 
+			return PartialForAsync(htmlHelper, partialViewName, propertyModelExplorer, additionalViewData, fullPropertyName, partialViewData);
+		}
+
+		private static Task<IHtmlContent> PartialForAsync<TModel>(
+			IHtmlHelper<TModel> htmlHelper,
+			string partialViewName,
+			ModelExplorer propertyModelExplorer,
+			object additionalViewData,
+			string fullPropertyName, 
+			ViewDataDictionary partialViewData)
+		{
 			partialViewData.TemplateInfo.HtmlFieldPrefix = fullPropertyName;
 
 			if (additionalViewData != null)
