@@ -25,10 +25,10 @@ namespace Grammophone.Domos.WebCore.Mvc
 			switch (exception)
 			{
 				case ActionException actionException:
-				case AccessDeniedException accessDeniedException:
+				//case AccessDeniedException accessDeniedException:
 				case IntegrityViolationException integrityConstraintExceptinon:
 				case UserException userException:
-				case InvalidOperationException invalidOperationException:
+				//case InvalidOperationException invalidOperationException:
 					// These exceptions are intended to communicate errors to the user,
 					// thus do not record them as system errors.
 					break;
