@@ -346,7 +346,7 @@ namespace Grammophone.Domos.WebCore
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="modelPropertyExpressionText">The expression text specifying the property inside the model.</param>
 		/// <returns>Returns the MVC string containing the plain text of the description, if found, else returns empty content.</returns>
-		public static IHtmlContent DescriptionFor<TModel>(
+		public static IHtmlContent Description<TModel>(
 			this IHtmlHelper<TModel> htmlHelper,
 			string modelPropertyExpressionText)
 		{
@@ -399,7 +399,7 @@ namespace Grammophone.Domos.WebCore
 		/// <param name="htmlHelper">The HTML helper.</param>
 		/// <param name="modelPropertyExpressionText">The expression text specifying the property inside the model.</param>
 		/// <returns>Returns the MVC string containing the plain text of the prompt, if found, else returns empty content.</returns>
-		public static IHtmlContent PromptFor<TModel>(
+		public static IHtmlContent Prompt<TModel>(
 			this IHtmlHelper<TModel> htmlHelper,
 			string modelPropertyExpressionText)
 		{
