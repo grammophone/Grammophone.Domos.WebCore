@@ -34,7 +34,9 @@ namespace Grammophone.Domos.WebCore.Mvc
 					break;
 
 				default:
+#pragma warning disable CS0618 // Type or member is obsolete
 					var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
+#pragma warning restore CS0618 // Type or member is obsolete
 
 					telemetry.TrackException(exception);
 

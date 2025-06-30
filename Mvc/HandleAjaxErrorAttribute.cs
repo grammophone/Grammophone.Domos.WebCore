@@ -61,7 +61,9 @@ namespace Grammophone.Domos.WebCore.Mvc
 							statusCode = HttpStatusCode.Forbidden;
 							userMessage = ErrorMessages.ACCESS_DENIED;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 							var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
+#pragma warning restore CS0618 // Type or member is obsolete
 
 							telemetry.TrackException(exception);
 							break;
