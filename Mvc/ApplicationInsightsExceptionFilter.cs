@@ -22,26 +22,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 		{
 			var exception = actionExecutedContext.Exception;
 
-			switch (exception)
-			{
-				case ActionException actionException:
-				//case AccessDeniedException accessDeniedException:
-				case IntegrityViolationException integrityConstraintExceptinon:
-				case UserException userException:
-				//case InvalidOperationException invalidOperationException:
-					// These exceptions are intended to communicate errors to the user,
-					// thus do not record them as system errors.
-					break;
-
-				default:
-#pragma warning disable CS0618 // Type or member is obsolete
-					var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-#pragma warning restore CS0618 // Type or member is obsolete
-
-					telemetry.TrackException(exception);
-
-					break;
-			}
+			ApplicationInsightsLogging.LogException(exception);
 		}
 	}
 }
