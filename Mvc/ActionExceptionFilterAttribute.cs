@@ -11,6 +11,7 @@ namespace Grammophone.Domos.WebCore.Mvc
 	/// Catches <see cref="ActionException"/> and executes
 	/// the <see cref="ActionException.TargetActionResult"/>.
 	/// </summary>
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 	public class ActionExceptionFilterAttribute : Attribute, IExceptionFilter
 	{
 		/// <summary>
