@@ -23,6 +23,22 @@ namespace Grammophone.Domos.WebCore.Models
 			if (displayMessage == null) throw new ArgumentNullException(nameof(displayMessage));
 
 			this.DisplayMessage = displayMessage;
+			this.ExceptionName = nameof(UserException);
+		}
+
+		/// <summary>
+		/// Create.
+		/// </summary>
+		/// <param name="displayMessage">The display message to be set.</param>
+		/// <param name="exceptionName">The name of the exception.</param>
+		/// 
+		public UserErrorModel(string displayMessage, string exceptionName)
+		{
+			if (displayMessage == null) throw new ArgumentNullException(nameof(displayMessage));
+			if (exceptionName == null) throw new ArgumentNullException(nameof(exceptionName));
+
+			this.DisplayMessage = displayMessage;
+			this.ExceptionName = exceptionName;
 		}
 
 		/// <summary>
